@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hi Suvai Admin — Management Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       AUTH SCREEN (LOGIN)
+  ============================================================ -->
+  <div id="auth-screen" class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-logo-badge">
+          <span>✦</span> Hi Suvai Admin Portal <span>✦</span>
+        </div>
+        <h1 class="auth-title">Admin Login</h1>
+        <p class="auth-subtitle">Sign in to access management dashboard</p>
+      </div>
+
+      <div class="auth-quick-creds">
+        <div>
+          <strong>Admin:</strong> Rajaselvi@gmail.com<br />
+          <span style="color:var(--text-muted);">Password: Rajaselvi29</span>
+        </div>
+        <button type="button" class="btn-fill-creds" onclick="fillDemoCredentials()">Auto Fill</button>
+      </div>
+
+      <form id="login-form" onsubmit="handleAdminLogin(event)">
+        <div class="form-group">
+          <label class="form-label" for="login-email">Email Address</label>
+          <input type="email" id="login-email" class="form-control" placeholder="Rajaselvi@gmail.com" required autocomplete="email" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-password">Password</label>
+          <input type="password" id="login-password" class="form-control" placeholder="••••••••" required autocomplete="current-password" />
+        </div>
+
+        <button type="submit" id="login-submit-btn" class="btn btn-purple" style="width: 100%; margin-top: 10px;">
+          Log In to Dashboard
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ADMIN APPLICATION (AUTHENTICATED WITH SIDEBAR)
+  ============================================================ -->
+  <div id="admin-app">
+    
+    <!-- LEFT SIDEBAR (VDG FASHION STYLE) -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand-icon">HS</div>
+        <div>
+          <div class="sidebar-brand-name">Hi Suvai</div>
+          <div class="sidebar-brand-sub">Management Portal</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-menu">
+        <button class="sidebar-item active" id="nav-dashboard" onclick="switchView('dashboard')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Dashboard</span>
+        </button>
+
+        <button class="sidebar-item" id="nav-products" onclick="switchView('products')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span>Products</span>
+          <span class="sidebar-badge" id="sidebar-product-count">0</span>
+        </button>
+
+        <button class="sidebar-item" id="nav-orders" onclick="switchView('orders')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span>Orders</span>
+          <span class="sidebar-badge" id="sidebar-order-count" style="background:#7C3AED; color:#fff;">0</span>
+        </button>
+
+        <button class="sidebar-item" id="nav-banners" onclick="switchView('banners')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <span>Index Banners</span>
+        </button>
+
+        <button class="sidebar-item" id="nav-settings" onclick="switchView('settings')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Settings</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user-avatar" id="sidebar-avatar-initial">R</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebar-user-name">Rajaselvi</div>
+          <div class="sidebar-user-role">Super Admin</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT MAIN CONTENT LAYOUT -->
+    <div class="admin-layout-main">
+      
+      <!-- Top Search & Profile Bar -->
+      <header class="admin-top-header">
+        <div class="top-search-wrap">
+          <svg class="top-search-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="global-search-input" class="top-search-input" placeholder="Search for products, orders, categories..." oninput="handleGlobalSearch(this.value)" />
+        </div>
+
+        <div class="top-actions">
+          <a href="/" target="_blank" class="btn-store-preview" title="View Customer Front Storefront">
+            <span>Customer Store</span> ↗
+          </a>
+          <div class="top-user-badge">
+            <div class="top-avatar" id="top-avatar-initial">R</div>
+            <div class="top-user-details">
+              <div class="top-user-name" id="top-user-name">Rajaselvi</div>
+              <div class="top-user-role">Super Admin</div>
+            </div>
+          </div>
+          <button class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem;" onclick="handleAdminLogout()">
+            Logout
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Page Content -->
+      <div class="admin-page-content">
+
+        <!-- ============================================================
+             VIEW 1: DASHBOARD OVERVIEW
+        ============================================================ -->
+        <section id="view-dashboard" class="view-section active">
+          <div class="page-header">
+            <div>
+              <h2 class="page-title">Dashboard Overview</h2>
+              <p class="page-subtitle">Real-time statistics from your store and customer orders</p>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <button class="btn btn-purple" onclick="openAddProductModal()">
+                + Add Product
+              </button>
+            </div>
+          </div>
+
+          <!-- KPI Metrics Grid -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-icon-wrap">📦</div>
+              <div>
+                <div class="kpi-label">Total Products</div>
+                <div class="kpi-val" id="kpi-total-products">0</div>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon-wrap info">🛒</div>
+              <div>
+                <div class="kpi-label">Total Orders</div>
+                <div class="kpi-val" id="kpi-total-orders">0</div>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon-wrap warning">⏳</div>
+              <div>
+                <div class="kpi-label">Pending Orders</div>
+                <div class="kpi-val" id="kpi-pending-orders">0</div>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon-wrap success">💰</div>
+              <div>
+                <div class="kpi-label">Total Revenue</div>
+                <div class="kpi-val" id="kpi-total-revenue">₹0</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category Breakdown & Quick Actions -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px;" class="form-grid">
+            <div class="settings-card" style="margin-bottom:0;">
+              <h3 style="font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:16px;">
+                Category Breakdown
+              </h3>
+              <div id="category-distribution-list" style="display:flex; flex-direction:column; gap:10px;">
+                <!-- Dynamic Category Pills -->
+              </div>
+            </div>
+
+            <div class="settings-card" style="margin-bottom:0;">
+              <h3 style="font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:16px;">
+                Quick Shortcuts
+              </h3>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <button class="btn btn-outline" style="justify-content:flex-start;" onclick="switchView('orders')">
+                  🛒 View Customer Orders
+                </button>
+                <button class="btn btn-outline" style="justify-content:flex-start;" onclick="switchView('banners')">
+                  🖼️ Customize Hero Banners
+                </button>
+                <button class="btn btn-outline" style="justify-content:flex-start;" onclick="switchView('settings')">
+                  ⚙️ Update Social Media &amp; Contact Info
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Orders Section -->
+          <div class="table-wrapper">
+            <div style="padding: 16px 20px; background: var(--bg-surface-2); border-bottom: 1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+              <strong style="color:var(--text-primary); font-size:0.85rem; letter-spacing:0.8px; text-transform:uppercase;">Recent Customer Orders</strong>
+              <button class="btn btn-outline" style="padding: 4px 10px; font-size:0.75rem;" onclick="switchView('orders')">View All Orders</button>
+            </div>
+            <table class="product-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Payment</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="dashboard-recent-orders-tbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ============================================================
+             VIEW 2: PRODUCTS INVENTORY TABLE
+        ============================================================ -->
+        <section id="view-products" class="view-section">
+          <div class="page-header">
+            <div>
+              <h2 class="page-title">Products Inventory</h2>
+              <p class="page-subtitle">Add, edit, manage stock, and delete store products</p>
+            </div>
+            <button class="btn btn-purple" onclick="openAddProductModal()">
+              + Add New Product
+            </button>
+          </div>
+
+          <!-- Control Bar -->
+          <div class="controls-bar">
+            <div class="search-input-wrap">
+              <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="admin-search-input" class="search-input" placeholder="Search by name, tag, or description..." oninput="handleProductFilterChange()" />
+            </div>
+
+            <div class="filters-group">
+              <select id="admin-filter-category" class="select-ctrl" onchange="handleProductFilterChange()">
+                <option value="all">All Categories</option>
+                <option value="health">Health Mix</option>
+                <option value="porridge">Porridge &amp; Rice Mix</option>
+                <option value="flour">Special Flour</option>
+                <option value="combo">Combo Packs</option>
+                <option value="spices">Spices &amp; Masala</option>
+                <option value="snacks">Traditional Snacks</option>
+                <option value="other">Other</option>
+              </select>
+
+              <select id="admin-filter-status" class="select-ctrl" onchange="handleProductFilterChange()">
+                <option value="all">All Availability</option>
+                <option value="available">In Stock &amp; Active</option>
+                <option value="outofstock">Out of Stock</option>
+              </select>
+
+              <select id="admin-filter-sort" class="select-ctrl" onchange="handleProductFilterChange()">
+                <option value="newest">Newest First</option>
+                <option value="low-high">Price: Low to High</option>
+                <option value="high-low">Price: High to Low</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Product Table -->
+          <div class="table-wrapper">
+            <table class="product-table">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Product &amp; Tag</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                  <th>Status</th>
+                  <th>Featured</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-products-tbody">
+                <!-- Dynamically rendered rows -->
+              </tbody>
+            </table>
+            <div id="table-loading-msg" style="padding: 40px; text-align: center; color: var(--text-muted);">
+              Loading products from database...
+            </div>
+            <div id="table-empty-msg" style="display:none; padding: 40px; text-align: center; color: var(--text-muted);">
+              No products found matching your filter criteria.
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================
+             VIEW 3: ORDERS MANAGEMENT (NEW!)
+        ============================================================ -->
+        <section id="view-orders" class="view-section">
+          <div class="page-header">
+            <div>
+              <h2 class="page-title">Customer Orders</h2>
+              <p class="page-subtitle">Track, fulfill, and manage customer orders placed on Hi Suvai</p>
+            </div>
+            <button class="btn btn-outline" onclick="loadAdminOrders()">
+              🔄 Refresh Orders
+            </button>
+          </div>
+
+          <!-- Order KPIs -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-icon-wrap info">📦</div>
+              <div>
+                <div class="kpi-label">Total Orders</div>
+                <div class="kpi-val" id="orders-kpi-total">0</div>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon-wrap warning">⌛</div>
+              <div>
+                <div class="kpi-label">Pending</div>
+                <div class="kpi-val" id="orders-kpi-pending">0</div>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon-wrap success">🚚</div>
+              <div>
+                <div class="kpi-label">Shipped / Delivered</div>
+                <div class="kpi-val" id="orders-kpi-delivered">0</div>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon-wrap success">💰</div>
+              <div>
+                <div class="kpi-label">Total Order Value</div>
+                <div class="kpi-val" id="orders-kpi-revenue">₹0</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Controls Bar -->
+          <div class="controls-bar">
+            <div class="search-input-wrap">
+              <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="order-search-input" class="search-input" placeholder="Search by Customer Name, Phone, City, Order ID..." oninput="handleOrderFilterChange()" />
+            </div>
+
+            <div class="filters-group">
+              <select id="order-filter-status" class="select-ctrl" onchange="handleOrderFilterChange()">
+                <option value="all">All Order Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="Processing">Processing</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Orders Table -->
+          <div class="table-wrapper">
+            <table class="product-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer Name &amp; Contact</th>
+                  <th>Delivery Address</th>
+                  <th>Items Ordered</th>
+                  <th>Amount</th>
+                  <th>Payment</th>
+                  <th>Order Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-orders-tbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+            <div id="orders-loading-msg" style="padding: 40px; text-align: center; color: var(--text-muted);">
+              Loading customer orders...
+            </div>
+            <div id="orders-empty-msg" style="display:none; padding: 40px; text-align: center; color: var(--text-muted);">
+              No customer orders found yet.
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================
+             VIEW 4: INDEX BANNERS (VDG FASHION STYLE)
+        ============================================================ -->
+        <section id="view-banners" class="view-section">
+          <div class="page-header">
+            <div>
+              <h2 class="page-title">Index Banners</h2>
+              <p class="page-subtitle">Manage desktop and mobile hero banners on the storefront homepage</p>
+            </div>
+          </div>
+
+          <!-- Banner Preview Cards (Slot 1, 2, 3) -->
+          <div class="banner-preview-grid">
+            
+            <!-- Banner Slot 1 -->
+            <div class="banner-card">
+              <div class="banner-card-header">
+                <span class="banner-card-title">Desktop Banner 1</span>
+                <span class="banner-card-badge">DEFAULT / ACTIVE</span>
+              </div>
+              <div class="banner-card-preview" id="banner-preview-box-1">
+                <img id="banner-img-1" src="assets/hero-9yocouzg.png" alt="Desktop Banner 1" />
+              </div>
+              <div class="banner-card-footer">
+                Size: 1500 * 500 px
+              </div>
+            </div>
+
+            <!-- Banner Slot 2 -->
+            <div class="banner-card">
+              <div class="banner-card-header">
+                <span class="banner-card-title">Desktop Banner 2</span>
+                <span class="banner-card-badge">SLOT 2</span>
+              </div>
+              <div class="banner-card-preview" id="banner-preview-box-2">
+                <img id="banner-img-2" src="assets/hero-9yocouzg.png" alt="Desktop Banner 2" />
+              </div>
+              <div class="banner-card-footer">
+                Size: 1500 * 500 px
+              </div>
+            </div>
+
+            <!-- Banner Slot 3 -->
+            <div class="banner-card">
+              <div class="banner-card-header">
+                <span class="banner-card-title">Desktop Banner 3</span>
+                <span class="banner-card-badge">SLOT 3</span>
+              </div>
+              <div class="banner-card-preview" id="banner-preview-box-3">
+                <img id="banner-img-3" src="assets/hero-9yocouzg.png" alt="Desktop Banner 3" />
+              </div>
+              <div class="banner-card-footer">
+                Size: 1500 * 500 px
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Upload Custom Banners Section -->
+          <div class="banner-uploader-card">
+            <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 18px;">
+              Upload Custom Desktop Banners
+            </h3>
+
+            <!-- Slot 1 Upload Form -->
+            <form class="banner-upload-row" onsubmit="handleBannerUpload(event, 1)">
+              <span class="banner-upload-slot">Slot 1</span>
+              <div class="banner-thumb-mini">
+                <img id="slot-thumb-1" src="assets/hero-9yocouzg.png" alt="Thumb 1" />
+              </div>
+              <div class="banner-form-inputs">
+                <input type="file" id="banner-file-1" class="form-control" style="padding:6px 10px;" accept="image/*" onchange="previewSlotImage(1, this)" />
+                <input type="text" id="banner-title-1" class="form-control" placeholder="Banner Headline (e.g. Traditional Flavours)" />
+              </div>
+              <button type="submit" class="btn btn-purple" style="padding: 8px 16px;">Save Slot 1</button>
+            </form>
+
+            <!-- Slot 2 Upload Form -->
+            <form class="banner-upload-row" onsubmit="handleBannerUpload(event, 2)">
+              <span class="banner-upload-slot">Slot 2</span>
+              <div class="banner-thumb-mini">
+                <img id="slot-thumb-2" src="assets/hero-9yocouzg.png" alt="Thumb 2" />
+              </div>
+              <div class="banner-form-inputs">
+                <input type="file" id="banner-file-2" class="form-control" style="padding:6px 10px;" accept="image/*" onchange="previewSlotImage(2, this)" />
+                <input type="text" id="banner-title-2" class="form-control" placeholder="Banner Headline (e.g. Daily Health Mix)" />
+              </div>
+              <button type="submit" class="btn btn-purple" style="padding: 8px 16px;">Save Slot 2</button>
+            </form>
+
+            <!-- Slot 3 Upload Form -->
+            <form class="banner-upload-row" onsubmit="handleBannerUpload(event, 3)">
+              <span class="banner-upload-slot">Slot 3</span>
+              <div class="banner-thumb-mini">
+                <img id="slot-thumb-3" src="assets/hero-9yocouzg.png" alt="Thumb 3" />
+              </div>
+              <div class="banner-form-inputs">
+                <input type="file" id="banner-file-3" class="form-control" style="padding:6px 10px;" accept="image/*" onchange="previewSlotImage(3, this)" />
+                <input type="text" id="banner-title-3" class="form-control" placeholder="Banner Headline (e.g. Heritage Rice Porridge)" />
+              </div>
+              <button type="submit" class="btn btn-purple" style="padding: 8px 16px;">Save Slot 3</button>
+            </form>
+
+          </div>
+        </section>
+
+        <!-- ============================================================
+             VIEW 5: SETTINGS (VDG FASHION STYLE SOCIAL & CONTACT)
+        ============================================================ -->
+        <section id="view-settings" class="view-section">
+          <div class="page-header">
+            <div>
+              <h2 class="page-title">Store Settings &amp; Social Links</h2>
+              <p class="page-subtitle">Manage public contact details, social links, and storefront configuration</p>
+            </div>
+            <button class="btn btn-purple" onclick="saveStoreSettings()">
+              Save Configuration
+            </button>
+          </div>
+
+          <!-- Settings Tabs -->
+          <div class="settings-tabs-nav">
+            <button class="settings-tab-btn active" onclick="switchSettingsTab('general')">General Settings</button>
+            <button class="settings-tab-btn" onclick="switchSettingsTab('social')">Social Media &amp; WhatsApp</button>
+          </div>
+
+          <!-- General Settings Form -->
+          <form id="settings-form" onsubmit="event.preventDefault(); saveStoreSettings();">
+            
+            <div class="settings-card">
+              <h3 class="settings-sec-title">Store Brand &amp; Logo</h3>
+              <p class="settings-sec-subtitle">Upload your brand logo for the storefront navbar and receipts.</p>
+
+              <div class="form-group" style="display:flex; align-items:center; gap:20px;">
+                <div style="width:80px; height:80px; background:var(--bg-surface-2); border:1px solid var(--border-color); border-radius:10px; padding:6px; display:flex; align-items:center; justify-content:center;">
+                  <img id="settings-logo-preview" src="assets/logo.png" alt="Logo" style="max-width:100%; max-height:100%; object-fit:contain;" />
+                </div>
+                <div>
+                  <input type="file" id="settings-logo-file" class="form-control" accept="image/*" onchange="previewLogoFile(this)" />
+                  <span style="font-size:0.75rem; color:var(--text-muted); display:block; margin-top:4px;">Recommended: PNG with transparent background</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-card">
+              <h3 class="settings-sec-title">General Contact Parameters</h3>
+              <p class="settings-sec-subtitle">Edit public contact parameters shown on the customer storefront.</p>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label" for="setting-phone">Public Support Phone</label>
+                  <input type="text" id="setting-phone" class="form-control" placeholder="6381926567" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="setting-email">Contact Email Address</label>
+                  <input type="email" id="setting-email" class="form-control" placeholder="contact@hisuvai.com" />
+                </div>
+
+                <div class="form-group full">
+                  <label class="form-label" for="setting-address">Store Physical Address</label>
+                  <textarea id="setting-address" class="form-control" rows="2" placeholder="15A, Madasamy Kovil Street, Pettai, Tirunelveli - 627004. Tamil Nadu, India."></textarea>
+                </div>
+
+                <div class="form-group full">
+                  <label class="form-label" for="setting-about">Store Tagline / About Text</label>
+                  <input type="text" id="setting-about" class="form-control" placeholder="Pure Traditional Taste & Ancient Roots — Handcrafted Foods from Tamil Nadu." />
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-card">
+              <h3 class="settings-sec-title">Social Media Links &amp; WhatsApp</h3>
+              <p class="settings-sec-subtitle">Easily update your YouTube, Facebook, and Instagram links shown in footer.</p>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label" for="setting-facebook">Facebook Page URL</label>
+                  <input type="url" id="setting-facebook" class="form-control" placeholder="https://www.facebook.com/hisuvai" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="setting-instagram">Instagram Profile URL</label>
+                  <input type="url" id="setting-instagram" class="form-control" placeholder="https://www.instagram.com/hisuvai" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="setting-youtube">YouTube Channel URL</label>
+                  <input type="url" id="setting-youtube" class="form-control" placeholder="https://www.youtube.com/@hisuvai" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="setting-whatsapp">WhatsApp Direct Number (with 91 country code)</label>
+                  <input type="text" id="setting-whatsapp" class="form-control" placeholder="916381926567" />
+                </div>
+              </div>
+
+              <div style="display:flex; justify-content:flex-end; margin-top:20px;">
+                <button type="button" class="btn btn-purple" onclick="saveStoreSettings()">
+                  Save Configuration
+                </button>
+              </div>
+            </div>
+
+          </form>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL 1: ADD / EDIT PRODUCT
+  ============================================================ -->
+  <div id="product-modal-overlay" class="modal-overlay" onclick="closeModalOnBackdrop(event)">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="product-modal-title" class="modal-title">Add New Product</h3>
+        <button type="button" class="modal-close-btn" onclick="closeProductModal()">✕</button>
+      </div>
+
+      <form id="product-form" onsubmit="handleProductFormSubmit(event)">
+        <input type="hidden" id="form-product-id" value="" />
+
+        <div class="form-grid">
+          <div class="form-group full">
+            <label class="form-label" for="form-name">Product Name <span class="req">*</span></label>
+            <input type="text" id="form-name" class="form-control" placeholder="e.g. 24 Ingredient Health Mix" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="form-tag">Tag / Badge</label>
+            <input type="text" id="form-tag" class="form-control" placeholder="e.g. Daily Nutrition, Combo Deal" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="form-category">Category <span class="req">*</span></label>
+            <select id="form-category" class="form-control" required>
+              <option value="health">Health Mix</option>
+              <option value="porridge">Porridge &amp; Rice Mix</option>
+              <option value="flour">Special Flour</option>
+              <option value="combo">Combo Packs</option>
+              <option value="spices">Spices &amp; Masala</option>
+              <option value="snacks">Traditional Snacks</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="form-price">Selling Price (₹) <span class="req">*</span></label>
+            <input type="number" id="form-price" class="form-control" placeholder="175" min="0" step="1" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="form-original-price">Original MRP (₹)</label>
+            <input type="number" id="form-original-price" class="form-control" placeholder="220" min="0" step="1" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="form-stock">Stock Quantity <span class="req">*</span></label>
+            <input type="number" id="form-stock" class="form-control" placeholder="50" min="0" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="form-unit">Unit / Net Weight</label>
+            <input type="text" id="form-unit" class="form-control" placeholder="250g, 500g, 1kg" />
+          </div>
+
+          <div class="form-group full">
+            <label class="form-label" for="form-short-desc">Short Summary (Tamil / English tagline)</label>
+            <input type="text" id="form-short-desc" class="form-control" placeholder="e.g. 24 தானியங்கள் &amp; நட்ஸ் — 250g" />
+          </div>
+
+          <div class="form-group full">
+            <label class="form-label" for="form-desc">Full Description <span class="req">*</span></label>
+            <textarea id="form-desc" class="form-control" rows="3" placeholder="Provide details on ingredients, benefits..." required></textarea>
+          </div>
+
+          <div class="form-group full">
+            <label class="form-label">Main Product Image (PNG, JPG, WEBP)</label>
+            <input type="file" id="form-file-main" class="form-control" accept="image/*" onchange="previewMainImage(this)" />
+            <div id="main-image-preview-wrap" style="display:none; margin-top:10px;">
+              <img id="main-preview-img" src="" alt="Main Preview" style="width:70px; height:70px; object-fit:contain; border:1px solid var(--border-color); border-radius:6px;" />
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; border-top: 1px solid var(--border-color); padding-top: 16px;">
+          <button type="button" class="btn btn-outline" onclick="closeProductModal()">Cancel</button>
+          <button type="submit" id="form-submit-btn" class="btn btn-purple">Save Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL 2: VIEW ORDER DETAILS (CUSTOMER & ITEMS INVOICE)
+  ============================================================ -->
+  <div id="order-detail-modal-overlay" class="modal-overlay" onclick="closeModalOnBackdrop(event)">
+    <div class="modal-box" style="max-width:650px;">
+      <div class="modal-header">
+        <div>
+          <h3 id="od-modal-order-id" class="modal-title">Order Details</h3>
+          <span id="od-modal-date" style="font-size:0.8rem; color:var(--text-muted);"></span>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeOrderDetailModal()">✕</button>
+      </div>
+
+      <!-- Customer Details Card -->
+      <div style="background:var(--bg-surface-2); border:1px solid var(--border-color); border-radius:8px; padding:16px; margin-bottom:16px;">
+        <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:8px; color:var(--text-primary);">Customer &amp; Delivery Information</h4>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:0.88rem;">
+          <div><strong>Name:</strong> <span id="od-cust-name">-</span></div>
+          <div><strong>Phone:</strong> <span id="od-cust-phone">-</span></div>
+          <div><strong>Email:</strong> <span id="od-cust-email">-</span></div>
+          <div><strong>City:</strong> <span id="od-cust-city">-</span></div>
+          <div style="grid-column:1 / -1;"><strong>Address:</strong> <span id="od-cust-address">-</span></div>
+        </div>
+      </div>
+
+      <!-- Line Items -->
+      <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:8px; color:var(--text-primary);">Items Ordered</h4>
+      <div id="od-items-container" class="order-detail-items">
+        <!-- Dynamically rendered -->
+      </div>
+
+      <!-- Totals & Status -->
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:14px; background:var(--bg-surface-2); border-radius:8px; margin-top:16px;">
+        <div>
+          <span style="font-size:0.8rem; color:var(--text-muted); display:block;">Payment: <strong id="od-pay-method" style="text-transform:uppercase;">-</strong></span>
+          <span style="font-size:0.8rem; color:var(--text-muted);">Status: <strong id="od-order-status">-</strong></span>
+        </div>
+        <div style="text-align:right;">
+          <span style="font-size:0.75rem; color:var(--text-muted); display:block;">Total Amount</span>
+          <strong id="od-grand-total" style="font-size:1.4rem; color:var(--crimson);">₹0</strong>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:20px;">
+        <button type="button" class="btn btn-purple" onclick="closeOrderDetailModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL 3: DELETE CONFIRMATION
+  ============================================================ -->
+  <div id="delete-modal-overlay" class="modal-overlay" onclick="closeModalOnBackdrop(event)">
+    <div class="modal-box" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color:var(--danger);">Delete Item</h3>
+        <button type="button" class="modal-close-btn" onclick="closeDeleteModal()">✕</button>
+      </div>
+      <p style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 20px;">
+        Are you sure you want to delete <strong id="delete-prod-name" style="color:var(--danger);"></strong>?
+      </p>
+      <div style="display: flex; justify-content: flex-end; gap: 12px;">
+        <button type="button" class="btn btn-outline" onclick="closeDeleteModal()">Cancel</button>
+        <button type="button" id="confirm-delete-btn" class="btn btn-crimson" onclick="executeDeleteProduct()">
+          Yes, Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Admin Application Logic -->
+  <script src="admin.js"></script>
+</body>
+</html>

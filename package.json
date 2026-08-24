@@ -1,0 +1,22 @@
+{
+  "name": "hi-suvai",
+  "version": "1.0.0",
+  "description": "Hi Suvai — Pure Taste, Ancient Roots (Full-Stack Website & Admin System)",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node --watch backend/server.js",
+    "seed:admin": "node backend/seeds/seedAdmin.js",
+    "seed:products": "node backend/seeds/seedProducts.js",
+    "seed": "node backend/seeds/seedAdmin.js && node backend/seeds/seedProducts.js"
+  },
+  "keywords": [
+    "traditional-foods",
+    "tamil-nadu",
+    "ecommerce",
+    "fullstack",
+    "express",
+    "mongodb"
+  ],
+  "author": "Hi Suvai",
+  "license": "ISC"
+}

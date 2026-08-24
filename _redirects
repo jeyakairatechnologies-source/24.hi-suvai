@@ -1,0 +1,10 @@
+﻿# Serves kkadmin static assets and dashboard
+/kkadmin/*  /kkadmin/index.html  200
+/kkadmin    /kkadmin/index.html  200
+
+# Proxy backend API and uploads requests to backend server (change http://localhost:5000 to your deployed backend URL)
+/api/*  http://localhost:5000/api/:splat  200
+/uploads/*  http://localhost:5000/uploads/:splat  200
+
+# Single Page App routing fallback for frontend
+/*  /index.html  200

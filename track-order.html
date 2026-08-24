@@ -1,0 +1,262 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Track Your Order - Hi Suvai</title>
+  <meta name="description" content="Track your Hi Suvai order status in real-time." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--crimson:#8B1A1A;--crimson-dark:#6B1212;--gold:#C8973A;--cream:#FDF5E6;--dark:#1A0A00;--text-muted:#6B4C2A;--white:#FFFFFF;--shadow-sm:0 4px 20px rgba(26,10,0,.08);--shadow-md:0 8px 40px rgba(26,10,0,.14);--radius:12px;--radius-lg:24px}
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--dark);min-height:100vh;overflow-x:hidden}
+    a{text-decoration:none;color:inherit}
+    img{max-width:100%;display:block}
+    .navbar{position:fixed;top:0;left:0;width:100%;z-index:100;background:rgba(26,10,0,.92);backdrop-filter:blur(20px);padding:16px 0;border-bottom:1px solid rgba(200,151,58,.2)}
+    .nav-inner{max-width:1200px;margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{display:flex;align-items:center;gap:10px}
+    .nav-logo img{height:44px;width:auto}
+    .nav-logo span{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:var(--gold);letter-spacing:2px}
+    .nav-back{display:inline-flex;align-items:center;gap:8px;font-size:.85rem;font-weight:500;color:rgba(255,255,255,.7);letter-spacing:1px;transition:color .2s}
+    .nav-back:hover{color:var(--gold)}
+    .hero-banner{padding-top:80px;background:linear-gradient(135deg,var(--dark) 0%,#3D1A00 50%,#1A0A00 100%);position:relative;overflow:hidden}
+    .hero-banner::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(200,151,58,.08) 0%,transparent 60%)}
+    .hero-banner-inner{max-width:1200px;margin:0 auto;padding:60px 32px;text-align:center;position:relative;z-index:1}
+    .hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:.72rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+    .hero-tag span{width:32px;height:1px;background:var(--gold);display:block}
+    .hero-banner h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.4rem,5vw,4rem);font-weight:700;color:#fff;line-height:1.1;margin-bottom:12px}
+    .hero-banner h1 em{color:var(--gold);font-style:italic}
+    .hero-banner p{font-size:1rem;color:rgba(255,255,255,.65);max-width:480px;margin:0 auto}
+    .main-wrap{max-width:820px;margin:0 auto;padding:48px 24px 80px}
+    .search-card{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);padding:40px 36px;margin-bottom:36px;border:1px solid rgba(200,151,58,.15)}
+    .search-card h2{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;color:var(--dark);margin-bottom:6px}
+    .search-card p{font-size:.9rem;color:var(--text-muted);margin-bottom:28px}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+    .form-group{display:flex;flex-direction:column;gap:6px}
+    .form-group label{font-size:.78rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted)}
+    .form-group input{padding:14px 16px;border:1.5px solid #E8D9C0;border-radius:var(--radius);font-size:.95rem;font-family:'Inter',sans-serif;color:var(--dark);background:#FDFAF5;transition:border-color .2s,box-shadow .2s;outline:none}
+    .form-group input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,151,58,.12)}
+    .form-group input::placeholder{color:#B8A090}
+    .btn-track{width:100%;padding:16px;background:var(--crimson);color:#fff;font-size:.9rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;border:none;border-radius:var(--radius);cursor:pointer;transition:transform .2s,box-shadow .2s;display:flex;align-items:center;justify-content:center;gap:10px}
+    .btn-track:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(139,26,26,.35)}
+    .btn-track .spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
+    .btn-track.loading .spinner{display:block}
+    .btn-track.loading .btn-text{display:none}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .msg-box{padding:14px 18px;border-radius:var(--radius);font-size:.88rem;font-weight:500;display:none;align-items:center;gap:10px;margin-top:16px}
+    .msg-box.show{display:flex}
+    .msg-box.error{background:#FEF2F2;color:#991B1B;border:1px solid #FECACA}
+    #result-section{display:none}
+    #result-section.show{display:block}
+    .order-result-card{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);border:1px solid rgba(200,151,58,.15);overflow:hidden;animation:slideUp .4s ease}
+    @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .order-card-header{background:linear-gradient(135deg,var(--dark) 0%,#3D1A00 100%);padding:28px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+    .order-id-block h3{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:var(--gold)}
+    .order-id-block .oid-label,.order-id-block .oid-date{font-size:.8rem;color:rgba(255,255,255,.5);letter-spacing:1px;text-transform:uppercase;display:block}
+    .status-badge{padding:10px 20px;border-radius:30px;font-size:.82rem;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+    .status-Pending{background:#FEF9C3;color:#854D0E}
+    .status-Processing{background:#DBEAFE;color:#1E40AF}
+    .status-Shipped{background:#F3E8FF;color:#7E22CE}
+    .status-Delivered{background:#DCFCE7;color:#166534}
+    .status-Cancelled{background:#FEE2E2;color:#991B1B}
+    .progress-section{padding:32px;border-bottom:1px solid #F0E2CE}
+    .progress-section h4{font-size:.75rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:24px}
+    .progress-steps{display:flex;align-items:flex-start;position:relative}
+    .progress-steps::before{content:'';position:absolute;top:20px;left:20px;right:20px;height:2px;background:#E8D9C0;z-index:0}
+    .progress-line-fill{position:absolute;top:20px;left:20px;height:2px;background:var(--gold);z-index:1;transition:width .8s ease}
+    .step{flex:1;display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;z-index:2}
+    .step-dot{width:40px;height:40px;border-radius:50%;border:2px solid #E8D9C0;background:var(--white);display:flex;align-items:center;justify-content:center;transition:all .4s ease}
+    .step-dot svg{width:18px;height:18px;stroke:#C8B8A0;fill:none}
+    .step.done .step-dot{background:var(--gold);border-color:var(--gold)}
+    .step.done .step-dot svg{stroke:#fff}
+    .step.active .step-dot{background:var(--crimson);border-color:var(--crimson);box-shadow:0 0 0 6px rgba(139,26,26,.15)}
+    .step.active .step-dot svg{stroke:#fff}
+    .step.cancelled .step-dot{background:#FEE2E2;border-color:#FCA5A5}
+    .step.cancelled .step-dot svg{stroke:#991B1B}
+    .step-label{font-size:.72rem;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text-muted);text-align:center}
+    .step.done .step-label,.step.active .step-label{color:var(--dark)}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr}
+    .info-block{padding:24px 32px;border-right:1px solid #F0E2CE;border-bottom:1px solid #F0E2CE}
+    .info-block:nth-child(even){border-right:none}
+    .info-block:nth-last-child(-n+2){border-bottom:none}
+    .info-label{font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px}
+    .info-value{font-size:.95rem;font-weight:600;color:var(--dark)}
+    .payment-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:.78rem;font-weight:600}
+    .payment-paid{background:#DCFCE7;color:#166534}
+    .payment-pending{background:#FEF9C3;color:#854D0E}
+    .items-section{padding:24px 32px;border-top:1px solid #F0E2CE}
+    .items-section h4{font-size:.75rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:18px}
+    .order-item{display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid #F8EFE2}
+    .order-item:last-child{border-bottom:none}
+    .item-img{width:56px;height:56px;border-radius:10px;background:#FDF8F0;object-fit:contain;padding:6px;flex-shrink:0}
+    .item-name{flex:1;font-size:.92rem;font-weight:600;color:var(--dark)}
+    .item-meta{font-size:.78rem;color:var(--text-muted);margin-top:2px}
+    .item-price{font-size:.95rem;font-weight:700;color:var(--crimson);text-align:right}
+    .item-qty{font-size:.78rem;color:var(--text-muted);text-align:right}
+    .pricing-section{background:#FDFAF5;padding:20px 32px;border-top:1px solid #F0E2CE}
+    .pricing-row{display:flex;justify-content:space-between;font-size:.88rem;color:var(--text-muted);padding:4px 0}
+    .pricing-row.total{font-size:1.05rem;font-weight:700;color:var(--dark);border-top:1px dashed #E0CDB0;margin-top:8px;padding-top:12px}
+    .pricing-row.total span:last-child{color:var(--crimson)}
+    .help-box{margin-top:24px;background:var(--white);border:1px solid rgba(200,151,58,.15);border-radius:var(--radius-lg);padding:28px 32px;display:flex;align-items:center;gap:20px;box-shadow:var(--shadow-sm)}
+    .help-icon{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--crimson),var(--crimson-dark));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .help-icon svg{width:24px;height:24px;stroke:#fff;fill:none}
+    .help-text h4{font-size:1rem;font-weight:700;color:var(--dark);margin-bottom:4px}
+    .help-text p{font-size:.85rem;color:var(--text-muted)}
+    .help-text a{color:var(--crimson);font-weight:600}
+    .page-footer{background:var(--dark);color:rgba(255,255,255,.5);text-align:center;padding:24px;font-size:.82rem}
+    .page-footer a{color:var(--gold)}
+    @media(max-width:640px){
+      .search-card{padding:28px 20px}
+      .form-row{grid-template-columns:1fr}
+      .order-card-header{padding:22px 20px}
+      .info-grid{grid-template-columns:1fr}
+      .info-block{border-right:none}
+      .info-block:nth-last-child(-n+2){border-bottom:1px solid #F0E2CE}
+      .info-block:last-child{border-bottom:none}
+      .items-section,.pricing-section{padding:20px}
+      .progress-section{padding:24px 20px}
+      .step-label{font-size:.62rem}
+      .help-box{flex-direction:column;text-align:center}
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/logo.png" alt="Hi Suvai" onerror="this.style.display='none'" />
+        <span>Hi Suvai</span>
+      </a>
+      <a href="index.html" class="nav-back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="15,18 9,12 15,6"/></svg>
+        Back to Home
+      </a>
+    </div>
+  </nav>
+
+  <div class="hero-banner">
+    <div class="hero-banner-inner">
+      <div class="hero-tag"><span></span>Hi Suvai<span></span></div>
+      <h1>Track Your <em>Order</em></h1>
+      <p>Enter your Order ID to get live status updates on your delivery.</p>
+    </div>
+  </div>
+
+  <div class="main-wrap">
+    <div class="search-card">
+      <h2>Order Lookup</h2>
+      <p>Your Order ID was sent via WhatsApp when you placed the order (e.g. HS-123456)</p>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="order-id-input">Order ID *</label>
+          <input type="text" id="order-id-input" placeholder="e.g. HS-123456" autocomplete="off" />
+        </div>
+        <div class="form-group">
+          <label for="phone-input">Phone (optional)</label>
+          <input type="tel" id="phone-input" placeholder="Enter phone for verification" maxlength="10" />
+        </div>
+      </div>
+      <button class="btn-track" id="track-btn" onclick="trackOrder()">
+        <span class="btn-text" style="display:flex;align-items:center;gap:10px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          Track My Order
+        </span>
+        <div class="spinner"></div>
+      </button>
+      <div class="msg-box error" id="error-msg">
+        <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" width="18" height="18"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="error-text">Order not found.</span>
+      </div>
+    </div>
+
+    <div id="result-section">
+      <div class="order-result-card" id="result-card"></div>
+    </div>
+
+    <div class="help-box">
+      <div class="help-icon">
+        <svg viewBox="0 0 24 24" stroke-width="2" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <div class="help-text">
+        <h4>Need Help?</h4>
+        <p>Cannot find your order? Contact us on <a href="https://wa.me/919876543210" target="_blank">WhatsApp</a> or <a href="index.html#contact">send us a message</a>.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="page-footer">
+    &copy; 2025 <a href="index.html">Hi Suvai</a> &mdash; Pure Taste, Ancient Roots
+  </footer>
+
+  <script>
+    const STATUS_STEPS = ['Pending','Processing','Shipped','Delivered'];
+    const STEP_ICONS = {
+      Pending:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+      Processing:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
+      Shipped:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
+      Delivered:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
+    };
+    function formatDate(d){return new Date(d).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}
+    function formatPayMethod(m){return{upi:'UPI',wa:'WhatsApp Pay',cod:'Cash on Delivery'}[m]||m}
+
+    async function trackOrder(){
+      const orderId=document.getElementById('order-id-input').value.trim().toUpperCase();
+      const phone=document.getElementById('phone-input').value.trim();
+      const btn=document.getElementById('track-btn');
+      const errBox=document.getElementById('error-msg');
+      const resultSection=document.getElementById('result-section');
+      if(!orderId){showError('Please enter your Order ID (e.g. HS-123456)');return}
+      btn.classList.add('loading');
+      errBox.classList.remove('show');
+      resultSection.classList.remove('show');
+      try{
+        let url='/api/orders/track/'+orderId;
+        if(phone)url+='?phone='+encodeURIComponent(phone);
+        const res=await fetch(url);
+        const data=await res.json();
+        if(!data.success){showError(data.message||'Order not found.');return}
+        renderResult(data.order);
+        resultSection.classList.add('show');
+        setTimeout(()=>resultSection.scrollIntoView({behavior:'smooth',block:'start'}),100);
+      }catch(e){showError('Could not connect to server. Please try again.')}
+      finally{btn.classList.remove('loading')}
+    }
+
+    function showError(msg){
+      document.getElementById('error-text').textContent=msg;
+      document.getElementById('error-msg').classList.add('show');
+    }
+
+    function renderResult(order){
+      const isCancelled=order.orderStatus==='Cancelled';
+      const currentStep=STATUS_STEPS.indexOf(order.orderStatus);
+      const stepsHtml=STATUS_STEPS.map((step,i)=>{
+        let cls='';
+        if(isCancelled){cls=i===0?'done':i===1?'cancelled':''}
+        else{if(i<currentStep)cls='done';else if(i===currentStep)cls='active'}
+        return '<div class="step '+cls+'"><div class="step-dot">'+STEP_ICONS[step]+'</div><div class="step-label">'+step+'</div></div>';
+      }).join('');
+      let fillPct=0;
+      if(!isCancelled&&currentStep>0)fillPct=(currentStep/(STATUS_STEPS.length-1))*100;
+      const itemsHtml=order.items.map(item=>'<div class="order-item"><img class="item-img" src="'+item.image+'" alt="'+item.name+'" onerror="this.src=\'assets/logo.png\'" /><div style="flex:1"><div class="item-name">'+item.name+'</div><div class="item-meta">'+item.unit+' x '+item.quantity+'</div></div><div><div class="item-price">Rs.'+(item.price*item.quantity).toLocaleString('en-IN')+'</div><div class="item-qty">Rs.'+item.price+' each</div></div></div>').join('');
+      const isPaid=order.payment.status==='paid';
+      const payBadge='<span class="payment-badge '+(isPaid?'payment-paid':'payment-pending')+'">'+(isPaid?'Paid':'Pending')+'</span>';
+      document.getElementById('result-card').innerHTML=
+        '<div class="order-card-header"><div class="order-id-block"><span class="oid-label">Order ID</span><h3>'+order.orderId+'</h3><span class="oid-date">Placed on '+formatDate(order.createdAt)+'</span></div><div class="status-badge status-'+order.orderStatus+'">'+order.orderStatus+'</div></div>'+
+        '<div class="progress-section"><h4>Delivery Progress</h4><div class="progress-steps"><div class="progress-line-fill" style="width:'+fillPct+'%"></div>'+stepsHtml+'</div>'+(isCancelled?'<p style="margin-top:16px;font-size:.85rem;color:#991B1B;text-align:center;">This order has been cancelled.</p>':'')+'</div>'+
+        '<div class="info-grid"><div class="info-block"><div class="info-label">Customer</div><div class="info-value">'+order.customer.name+'</div></div><div class="info-block"><div class="info-label">Ship To</div><div class="info-value">'+order.customer.city+', '+order.customer.state+'</div></div><div class="info-block"><div class="info-label">Payment Method</div><div class="info-value">'+formatPayMethod(order.payment.method)+'</div></div><div class="info-block"><div class="info-label">Payment Status</div><div class="info-value">'+payBadge+'</div></div></div>'+
+        '<div class="items-section"><h4>Order Items ('+order.items.length+')</h4>'+itemsHtml+'</div>'+
+        '<div class="pricing-section"><div class="pricing-row"><span>Subtotal</span><span>Rs.'+order.pricing.subtotal.toLocaleString('en-IN')+'</span></div>'+(order.pricing.shipping>0?'<div class="pricing-row"><span>Shipping</span><span>Rs.'+order.pricing.shipping.toLocaleString('en-IN')+'</span></div>':'<div class="pricing-row"><span>Shipping</span><span style="color:#166534">FREE</span></div>')+(order.pricing.discount>0?'<div class="pricing-row"><span>Discount</span><span style="color:#166534">-Rs.'+order.pricing.discount.toLocaleString('en-IN')+'</span></div>':'')+'<div class="pricing-row total"><span>Total Amount</span><span>Rs.'+order.pricing.grandTotal.toLocaleString('en-IN')+'</span></div></div>';
+    }
+
+    document.addEventListener('DOMContentLoaded',()=>{
+      ['order-id-input','phone-input'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')trackOrder()}));
+      const p=new URLSearchParams(window.location.search);
+      if(p.get('id')){document.getElementById('order-id-input').value=p.get('id');trackOrder()}
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+﻿.mongodb_bin/
+.tmp/
+node_modules/
+.env
