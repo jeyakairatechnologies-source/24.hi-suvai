@@ -276,12 +276,15 @@
     }
     .offer-card {
       background: #FFFFFF; border-radius: var(--radius-lg); overflow: hidden;
-      box-shadow: var(--shadow-md); border: 1px solid #F0E2CE;
-      transition: transform 0.35s ease, box-shadow 0.35s ease;
+      box-shadow: var(--shadow-md);
+      border: 2px solid var(--crimson);
+      transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
       display: flex; flex-direction: column;
     }
     .offer-card:hover {
-      transform: translateY(-6px); box-shadow: var(--shadow-lg);
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lg), 0 0 0 3px rgba(139,26,26,0.12), 0 8px 32px rgba(139,26,26,0.22);
+      border-color: var(--crimson-light);
     }
     .offer-img-wrap {
       width: 100%; height: 260px; overflow: hidden; position: relative;
@@ -801,17 +804,18 @@
       overflow: hidden;
       cursor: pointer;
       background: #fff;
-      border: 1.5px solid var(--crimson);
+      border: 2px solid var(--crimson);
       box-shadow: 0 4px 24px rgba(26,10,0,0.09);
       padding: 0;
       display: flex;
       flex-direction: column;
-      transition: transform 0.35s ease, box-shadow 0.35s ease;
+      transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
       position: relative;
     }
     .bento-item:hover {
       transform: translateY(-8px);
-      box-shadow: 0 16px 48px rgba(26,10,0,0.17);
+      box-shadow: 0 16px 48px rgba(26,10,0,0.17), 0 0 0 3px rgba(139,26,26,0.12), 0 8px 32px rgba(139,26,26,0.2);
+      border-color: var(--crimson-light);
     }
     .bento-img-frame {
       width: 100%;
@@ -2561,14 +2565,14 @@
       
       <div class="checkout-group" style="margin-bottom: 20px;">
         <label style="display:block; margin-bottom:8px; font-weight:600; font-size:0.9rem;">Your Name</label>
-        <input type="text" id="login-name" class="checkout-input" placeholder="e.g. Jeya Lakshmi" style="width:100%; padding:14px 16px; border:1px solid #D6CBB7; border-radius:8px; font-family:inherit; font-size:1rem;" />
+        <input type="text" id="login-name" class="checkout-input" placeholder="e.g. Hi Suvai" style="width:100%; padding:14px 16px; border:1px solid #D6CBB7; border-radius:8px; font-family:inherit; font-size:1rem;" />
       </div>
       
       <div class="checkout-group" style="margin-bottom: 30px;">
         <label style="display:block; margin-bottom:8px; font-weight:600; font-size:0.9rem;">Phone Number</label>
         <div style="display:flex;">
           <span style="display:flex; align-items:center; justify-content:center; padding:0 16px; background:#FAF5EB; border:1px solid #D6CBB7; border-right:none; border-radius:8px 0 0 8px; font-weight:600; color:var(--dark);">+91</span>
-          <input type="tel" id="login-phone" class="checkout-input" placeholder="9688375454" style="width:100%; padding:14px 16px; border:1px solid #D6CBB7; border-radius:0 8px 8px 0; font-family:inherit; font-size:1rem;" maxlength="10" />
+          <input type="tel" id="login-phone" class="checkout-input" placeholder="12345678910" style="width:100%; padding:14px 16px; border:1px solid #D6CBB7; border-radius:0 8px 8px 0; font-family:inherit; font-size:1rem;" maxlength="10" />
         </div>
       </div>
       
