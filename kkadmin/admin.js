@@ -951,7 +951,7 @@ let adminSpecialOffers = [
 
 async function loadAdminSettings() {
   try {
-    const res = await fetch(`${API_BASE}/settings`);
+    const res = await fetch(getAdminApiUrl('/settings'));
     const data = await res.json();
     if (data.success && data.settings) {
       currentSettings = data.settings;
@@ -1243,7 +1243,7 @@ async function saveStoreSettings() {
   }
 
   try {
-    const res = await fetch(`${API_BASE}/settings`, {
+    const res = await fetch(getAdminApiUrl('/settings'), {
       method: 'PUT',
       headers: { 'Authorization': `Bearer ${authToken}` },
       body: formData
