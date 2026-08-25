@@ -418,11 +418,13 @@ function openAddProductModal() {
 }
 
 function openEditProductModal(id) {
-  const p = allProducts.find(item => item._id === id);
+  const p = allProducts.find(item => (item._id || item.id) == id);
   if (!p) return;
 
-  document.getElementById('form-product-id').value = p._id;
+  const idKey = p._id || p.id;
+  document.getElementById('form-product-id').value = idKey;
   document.getElementById('product-modal-title').textContent = `Edit Product: ${p.name}`;
+  document.getElementById('form-sku').value = p.sku || `HS-${String(idKey).slice(-5).toUpperCase()}`;
   document.getElementById('form-name').value = p.name;
   document.getElementById('form-tag').value = p.tag || '';
   document.getElementById('form-category').value = p.category;
@@ -1285,14 +1287,37 @@ function promptEditStock(productId, currentStock) {
   const prod = allProducts.find(p => (p._id || p.id) == productId);
   if (!prod) return;
 
-  const val = prompt(`Enter exact stock count for "${prod.name}":`, currentStock);
-  if (val === null || val.trim() === '') return;
+  const idKey = prod._id || prod.id;
+  document.getElementById('stock-modal-prod-id').value = idKey;
+  document.getElementById('stock-modal-prod-name').textContent = prod.name;
+  document.getElementById('stock-modal-input').value = currentStock;
 
+  const modal = document.getElementById('stock-modal-overlay');
+  if (modal) {
+    modal.classList.add('open');
+    setTimeout(() => {
+      const input = document.getElementById('stock-modal-input');
+      if (input) { input.focus(); input.select(); }
+    }, 100);
+  }
+}
+
+function closeStockModal() {
+  const modal = document.getElementById('stock-modal-overlay');
+  if (modal) modal.classList.remove('open');
+}
+
+function handleStockModalSubmit(e) {
+  e.preventDefault();
+  const productId = document.getElementById('stock-modal-prod-id').value;
+  const val = document.getElementById('stock-modal-input').value;
   const num = parseInt(val, 10);
+
   if (isNaN(num) || num < 0) {
     showToast('Please enter a valid number (0 or higher) for stock.', 'error');
     return;
   }
 
+  closeStockModal();
   setExactStock(productId, num);
 }
