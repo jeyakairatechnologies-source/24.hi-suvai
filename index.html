@@ -274,23 +274,28 @@
       background-image: url('assets/hero-9yocouzg.png');
     }
 
-    @media (max-width: 992px) {
+    @media (min-width: 769px) and (max-width: 1024px) {
       .hero {
-        height: clamp(340px, 52vw, 550px);
+        height: clamp(340px, 48vw, 520px);
         min-height: 320px;
+      }
+      .hero-slide {
+        background-size: 100% 100% !important;
+        background-position: center center;
       }
     }
 
     @media (max-width: 768px) {
       .hero {
+        width: 100%;
         height: auto;
         aspect-ratio: 687 / 1024;
-        min-height: 460px;
-        max-height: 85vh;
+        min-height: unset;
+        max-height: 90vh;
       }
       .hero-slide {
-        background-size: cover;
-        background-position: center top;
+        background-size: 100% 100% !important;
+        background-position: center center;
       }
       .hero-slide-1 {
         background-image: url('assets/mobile%20portait%20hero1.png') !important;
