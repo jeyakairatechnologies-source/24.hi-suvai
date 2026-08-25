@@ -18,5 +18,8 @@
     "mongodb"
   ],
   "author": "Hi Suvai",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "^7.5.0"
+  }
 }

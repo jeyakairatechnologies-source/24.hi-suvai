@@ -13,6 +13,7 @@ const productSchema = new mongoose.Schema({
     lowercase: true,
     trim: true
   },
+  sku: { type: String, trim: true },
   tag: {
     type: String,
     trim: true,
@@ -35,7 +36,7 @@ const productSchema = new mongoose.Schema({
   },
   originalPrice: {
     type: Number,
-    default: function() {
+    default: function () {
       return this.price ? Math.round(this.price * 1.25) : 0;
     },
     min: [0, 'Original price cannot be negative']
@@ -94,7 +95,7 @@ const productSchema = new mongoose.Schema({
 });
 
 // Auto-generate slug from name if not provided
-productSchema.pre('save', function(next) {
+productSchema.pre('save', function (next) {
   if (this.isModified('name') || !this.slug) {
     const baseSlug = this.name
       .toLowerCase()
@@ -106,7 +107,7 @@ productSchema.pre('save', function(next) {
 });
 
 // Virtual for formatted discount percentage
-productSchema.virtual('discountPercent').get(function() {
+productSchema.virtual('discountPercent').get(function () {
   if (this.originalPrice && this.originalPrice > this.price) {
     return Math.round(((this.originalPrice - this.price) / this.originalPrice) * 100);
   }

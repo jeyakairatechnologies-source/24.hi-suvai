@@ -1185,21 +1185,7 @@ textarea.form-control {
 /* ============================================================
    RESPONSIVENESS
 ============================================================ */
-@media (max-width: 1024px) {
-  .admin-sidebar { width: 80px; }
-  .sidebar-brand-name, .sidebar-brand-sub, .sidebar-item span, .sidebar-badge, .sidebar-user-info { display: none; }
-  .sidebar-item { justify-content: center; padding: 12px; }
-  .admin-layout-main { margin-left: 80px; }
-  .banner-preview-grid { grid-template-columns: 1fr; }
-}
 
-@media (max-width: 768px) {
-  .admin-sidebar { display: none; }
-  .admin-layout-main { margin-left: 0; }
-  .top-search-wrap { display: none; }
-  .form-grid { grid-template-columns: 1fr; }
-  .admin-page-content { padding: 16px; }
-}
 
 /* ============================================================
    INVENTORY CONTROL CENTRE STYLES (VDG FASHION MATCH)
@@ -1277,4 +1263,75 @@ textarea.form-control {
 .btn-adjust-edit:hover {
   background: #6D28D9;
   box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+}
+/* ============================================================
+   MOBILE RESPONSIVENESS
+============================================================ */
+.admin-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 8px;
+  margin-right: 12px;
+}
+@media (max-width: 992px) {
+  .admin-sidebar {
+    display: flex !important;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1300;
+  }
+  .admin-sidebar.open {
+    transform: translateX(0) !important;
+  }
+  .admin-layout-main {
+    margin-left: 0;
+    width: 100%;
+  }
+  .admin-hamburger {
+    display: block;
+  }
+  .kpi-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .admin-charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 576px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .admin-page-content {
+    padding: 16px;
+  }
+  .top-search-input {
+    width: 150px;
+  }
+  .top-user-name, .top-user-role, .btn-store-preview span {
+    display: none;
+  }
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+.table-wrapper {
+  overflow-x: auto !important;
+}
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1299;
+}
+.sidebar-overlay.show {
+  display: block;
 }

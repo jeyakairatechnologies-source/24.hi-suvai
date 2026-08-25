@@ -82,11 +82,50 @@ function updateAdminUserUI() {
   if (topName) topName.textContent = name;
 }
 
-function fillDemoCredentials() {
-  const emailEl = document.getElementById('login-email');
-  const passEl = document.getElementById('login-password');
-  if (emailEl) emailEl.value = 'Rajaselvi@gmail.com';
-  if (passEl) passEl.value = 'Rajaselvi29';
+function showForgotPassword(e) {
+  e.preventDefault();
+  document.getElementById('login-form').style.display = 'none';
+  document.getElementById('forgot-password-link').parentElement.style.display = 'none';
+  document.getElementById('forgot-password-panel').style.display = 'block';
+  document.getElementById('forgot-email').value = '';
+  document.getElementById('forgot-msg').textContent = '';
+}
+
+function hideForgotPassword(e) {
+  e.preventDefault();
+  document.getElementById('forgot-password-panel').style.display = 'none';
+  document.getElementById('login-form').style.display = 'block';
+  const link = document.getElementById('forgot-password-link');
+  if (link && link.parentElement) link.parentElement.style.display = 'block';
+}
+
+async function handleForgotPassword() {
+  const emailEl = document.getElementById('forgot-email');
+  const msgEl = document.getElementById('forgot-msg');
+  const email = emailEl ? emailEl.value.trim() : '';
+
+  if (!email) {
+    msgEl.innerHTML = '<span style="color:#e53e3e;">⚠️ Please enter your email address.</span>';
+    return;
+  }
+
+  msgEl.innerHTML = '<span style="color:#7c3aed;">⏳ Sending reset link...</span>';
+
+  try {
+    const res = await fetch('/api/auth/forgot-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      msgEl.innerHTML = '<span style="color:#16a34a;">✅ ' + (data.message || 'Reset link sent! Check your email.') + '</span>';
+    } else {
+      msgEl.innerHTML = '<span style="color:#e53e3e;">❌ ' + (data.message || 'Email not found or error occurred.') + '</span>';
+    }
+  } catch (err) {
+    msgEl.innerHTML = '<span style="color:#e53e3e;">❌ Network error. Please try again.</span>';
+  }
 }
 
 async function handleAdminLogin(e) {
@@ -1070,7 +1109,7 @@ function renderInventoryTable(products) {
     const idKey = p._id || p.id;
     const stockQty = p.stock !== undefined ? Number(p.stock) : 0;
     const price = Number(p.price || 0);
-    const sku = p.sku || `SKU: HS-${String(idKey).slice(-5).toUpperCase()}`;
+    const sku = p.sku || `Product ID: HS-${String(idKey).slice(-5).toUpperCase()}`;
 
     let statusBadgeHtml = '';
     if (stockQty === 0) {

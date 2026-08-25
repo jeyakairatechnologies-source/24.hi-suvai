@@ -801,6 +801,7 @@
       overflow: hidden;
       cursor: pointer;
       background: #fff;
+      border: 1.5px solid var(--crimson);
       box-shadow: 0 4px 24px rgba(26,10,0,0.09);
       padding: 0;
       display: flex;
@@ -836,9 +837,6 @@
     }
     .bento-item:hover .bento-img-frame img {
       transform: scale(1.07);
-    }
-    .bento-badge {
-      display: none !important;
     }
     .bento-info {
       padding: 18px 20px 20px;
@@ -1303,6 +1301,15 @@
     }
     @media (max-width: 992px) {
       .contact-grid { grid-template-columns: 1fr; gap: 36px; }
+    }
+    @media (max-width: 576px) {
+      .contact-section { padding: 60px 0; }
+      .contact-card { padding: 24px; }
+      .contact-card h3 { font-size: 1.8rem; }
+      .contact-proprietor { font-size: 0.8rem; padding: 6px 12px; display: block; word-break: break-word; }
+      .contact-item { padding: 12px; gap: 12px; }
+      .contact-details a, .contact-details span { font-size: 0.95rem; display: block; word-break: break-word; }
+      .contact-icon { width: 38px; height: 38px; }
     }
 
     /* ============================================================
@@ -2236,7 +2243,11 @@
       animation: reviewsScroll 32s linear infinite;
       width: max-content;
     }
-    .reviews-track:hover { animation-play-state: paused; }
+    .reviews-track:hover,
+    .reviews-track:active,
+    .reviews-track:focus-within {
+      animation-play-state: paused;
+    }
     @keyframes reviewsScroll {
       0%   { transform: translateX(0); }
       100% { transform: translateX(-50%); }
@@ -2469,6 +2480,7 @@
 <!-- MOBILE MENU -->
 <div class="mobile-menu" id="mobile-menu">
   <div class="mobile-menu-pattern"></div>
+  <a href="#" onclick="openLoginModal(event); hamburger.classList.remove('open');mobileMenu.classList.remove('open');document.body.style.overflow='';" class="mm-link login-link-text" style="color: var(--gold-light);">Login</a>
   <a href="#offers" onclick="hamburger.classList.remove('open');mobileMenu.classList.remove('open');document.body.style.overflow='';" class="mm-link">Offers</a>
   <a href="#products" onclick="hamburger.classList.remove('open');mobileMenu.classList.remove('open');document.body.style.overflow='';" class="mm-link">Products</a>
   <a href="#contact" onclick="hamburger.classList.remove('open');mobileMenu.classList.remove('open');document.body.style.overflow='';" class="mm-link">Contact</a>
@@ -2481,10 +2493,10 @@
       <img src="assets/logo.png" alt="Hi Suvai Logo" class="nav-logo-img" />
     </a>
     <ul class="nav-links">
-      <li><a href="#home">Home</a></li>
-      <li><a href="#products">Products</a></li>
-      <li><a href="#offers">Offers</a></li>
+      <li><a href="#products" class="nav-cta">Products</a></li>
+      <li><a href="#offers" class="nav-cta">Offers</a></li>
       <li><a href="#contact" class="nav-cta">Contact Us</a></li>
+      <li><a href="#" class="nav-cta login-link-text" style="margin-left:8px;" onclick="openLoginModal(event)">Login</a></li>
     </ul>
     <button class="nav-cart-btn" id="nav-cart-btn" aria-label="Open cart">
       <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
@@ -2530,6 +2542,40 @@
       <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       ➔ PROCEED TO CHECKOUT
     </button>
+  </div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="checkout-overlay" id="login-overlay" role="dialog" aria-label="Login">
+  <div class="checkout-modal" id="login-modal" style="max-width: 450px;">
+    <div class="co-hdr">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <h3 style="margin:0;">Customer Login</h3>
+      </div>
+      <button class="co-close" onclick="closeLoginModal()" aria-label="Close login">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div style="padding: 24px;">
+      <p style="color: var(--text-muted); margin-bottom: 24px; font-size: 0.95rem; line-height: 1.5;">Enter your name and phone number to quickly access your saved addresses and track orders.</p>
+      
+      <div class="checkout-group" style="margin-bottom: 20px;">
+        <label style="display:block; margin-bottom:8px; font-weight:600; font-size:0.9rem;">Your Name</label>
+        <input type="text" id="login-name" class="checkout-input" placeholder="e.g. Jeya Lakshmi" style="width:100%; padding:14px 16px; border:1px solid #D6CBB7; border-radius:8px; font-family:inherit; font-size:1rem;" />
+      </div>
+      
+      <div class="checkout-group" style="margin-bottom: 30px;">
+        <label style="display:block; margin-bottom:8px; font-weight:600; font-size:0.9rem;">Phone Number</label>
+        <div style="display:flex;">
+          <span style="display:flex; align-items:center; justify-content:center; padding:0 16px; background:#FAF5EB; border:1px solid #D6CBB7; border-right:none; border-radius:8px 0 0 8px; font-weight:600; color:var(--dark);">+91</span>
+          <input type="tel" id="login-phone" class="checkout-input" placeholder="9688375454" style="width:100%; padding:14px 16px; border:1px solid #D6CBB7; border-radius:0 8px 8px 0; font-family:inherit; font-size:1rem;" maxlength="10" />
+        </div>
+      </div>
+      
+      <button class="btn-complete-order" type="button" onclick="submitLogin()" style="width:100%; padding:16px; background:var(--crimson); color:#fff; border:none; border-radius:8px; font-weight:700; font-size:1.05rem; letter-spacing:0.5px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; transition:all 0.3s;">
+        LOGIN <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -3188,7 +3234,7 @@
               <svg class="review-g-icon" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
             </div>
             <div class="review-stars"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
-            <p class="review-text">"The 24-grain health mix is absolutely outstanding! My whole family switched from store-bought powders. You can taste the difference â€” pure, roasted grains with no additives. Delivery was super fast too!"</p>
+            <p class="review-text">"The 24-grain health mix is absolutely outstanding! My whole family switched from store-bought powders. You can taste the difference - pure, roasted grains with no additives. Delivery was super fast too!"</p>
           </div>          <div class="review-card">
             <div class="review-quote">&ldquo;</div>
             <div class="review-card-top">
@@ -3212,7 +3258,7 @@
               <svg class="review-g-icon" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
             </div>
             <div class="review-stars"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
-            <p class="review-text">"Amazing packaging and quality. The Ragi flour is stone-ground and smells so fresh â€” completely different from what you find in supermarkets. Will definitely order again. Highly recommended!"</p>
+            <p class="review-text">"Amazing packaging and quality. The Ragi flour is stone-ground and smells so fresh - completely different from what you find in supermarkets. Will definitely order again. Highly recommended!"</p>
           </div>          <div class="review-card">
             <div class="review-quote">&ldquo;</div>
             <div class="review-card-top">
@@ -3236,7 +3282,7 @@
               <svg class="review-g-icon" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
             </div>
             <div class="review-stars"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
-            <p class="review-text">"I bought the special thinai porridge mix for my baby. The purity is unmatched. No artificial colours or flavours â€” just roasted wholesome grains. My baby loves it! Worth every rupee."</p>
+            <p class="review-text">"I bought the special thinai porridge mix for my baby. The purity is unmatched. No artificial colours or flavours - just roasted wholesome grains. My baby loves it! Worth every rupee."</p>
           </div>          <div class="review-card">
             <div class="review-quote">&ldquo;</div>
             <div class="review-card-top">
@@ -3260,7 +3306,7 @@
               <svg class="review-g-icon" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
             </div>
             <div class="review-stars"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
-            <p class="review-text">"The 24-grain health mix is absolutely outstanding! My whole family switched from store-bought powders. You can taste the difference â€” pure, roasted grains with no additives. Delivery was super fast too!"</p>
+            <p class="review-text">"The 24-grain health mix is absolutely outstanding! My whole family switched from store-bought powders. You can taste the difference - pure, roasted grains with no additives. Delivery was super fast too!"</p>
           </div>          <div class="review-card">
             <div class="review-quote">&ldquo;</div>
             <div class="review-card-top">
@@ -3284,7 +3330,7 @@
               <svg class="review-g-icon" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
             </div>
             <div class="review-stars"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
-            <p class="review-text">"Amazing packaging and quality. The Ragi flour is stone-ground and smells so fresh â€” completely different from what you find in supermarkets. Will definitely order again. Highly recommended!"</p>
+            <p class="review-text">"Amazing packaging and quality. The Ragi flour is stone-ground and smells so fresh - completely different from what you find in supermarkets. Will definitely order again. Highly recommended!"</p>
           </div>          <div class="review-card">
             <div class="review-quote">&ldquo;</div>
             <div class="review-card-top">
@@ -3308,7 +3354,7 @@
               <svg class="review-g-icon" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
             </div>
             <div class="review-stars"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
-            <p class="review-text">"I bought the special thinai porridge mix for my baby. The purity is unmatched. No artificial colours or flavours â€” just roasted wholesome grains. My baby loves it! Worth every rupee."</p>
+            <p class="review-text">"I bought the special thinai porridge mix for my baby. The purity is unmatched. No artificial colours or flavours - just roasted wholesome grains. My baby loves it! Worth every rupee."</p>
           </div>          <div class="review-card">
             <div class="review-quote">&ldquo;</div>
             <div class="review-card-top">
@@ -3340,7 +3386,7 @@
         <div class="label">Reach Out To Us</div>
         <h2 class="section-title reveal">Get in Touch with <em>Hi Suvai</em></h2>
         <p class="reveal delay-1" style="color: var(--text-muted); line-height: 1.8; margin-top: 16px; font-size: 1.05rem;">
-          Have questions about our heritage grains, artisanal snacks, or bulk orders? Connect directly with our Proprietor or reach out via email or phone â€” we are delighted to serve you!
+          Have questions about our heritage grains, artisanal snacks, or bulk orders? Connect directly with our Proprietor or reach out via email or phone - we are delighted to serve you!
         </p>
         <div style="margin-top: 30px;" class="reveal delay-2">
           <a href="https://wa.me/916381926567" target="_blank" class="btn-gold" style="gap:10px;">
@@ -4972,6 +5018,34 @@ function nextHeroSlide() {
   }
 }
 
+// --- LOGIN MODAL JS ---
+function openLoginModal(e) {
+  if (e) e.preventDefault();
+  document.getElementById('login-overlay').classList.add('open');
+}
+function closeLoginModal() {
+  document.getElementById('login-overlay').classList.remove('open');
+}
+function submitLogin() {
+  const name = document.getElementById('login-name').value.trim();
+  const phone = document.getElementById('login-phone').value.trim();
+  if (!name || phone.length < 10) {
+    showToast('Please enter a valid name and phone number.');
+    return;
+  }
+  localStorage.setItem('hisuvai_customer_name', name);
+  localStorage.setItem('hisuvai_customer_phone', phone);
+  closeLoginModal();
+  updateLoginUI(name);
+  showToast(`Welcome back, ${name}!`);
+}
+function updateLoginUI(name) {
+  const shortName = name.split(' ')[0];
+  document.querySelectorAll('.login-link-text').forEach(el => {
+    el.textContent = 'Hi, ' + shortName;
+  });
+}
+
 function resetHeroTimer() {
   if (heroTimer) clearInterval(heroTimer);
   heroTimer = setInterval(nextHeroSlide, 3000);
@@ -4979,6 +5053,14 @@ function resetHeroTimer() {
 
 document.addEventListener('DOMContentLoaded', () => {
   resetHeroTimer();
+  const savedName = localStorage.getItem('hisuvai_customer_name');
+  if (savedName) {
+    updateLoginUI(savedName);
+  } else {
+    setTimeout(() => {
+      openLoginModal();
+    }, 800);
+  }
 });
 </script>
 </body>
