@@ -81,7 +81,10 @@ router.put('/', protectAdmin, upload.single('storeLogo'), async (req, res) => {
       youtubeUrl,
       whatsappNumber,
       customCategories,
-      priceRanges
+      priceRanges,
+      proprietorName,
+      googleMapUrl,
+      specialOffers
     } = req.body;
 
     if (storeName) settings.storeName = storeName;
@@ -89,6 +92,8 @@ router.put('/', protectAdmin, upload.single('storeLogo'), async (req, res) => {
     if (contactEmail) settings.contactEmail = contactEmail;
     if (storeAddress) settings.storeAddress = storeAddress;
     if (aboutText) settings.aboutText = aboutText;
+    if (proprietorName) settings.proprietorName = proprietorName;
+    if (googleMapUrl) settings.googleMapUrl = googleMapUrl;
     if (facebookUrl !== undefined) settings.facebookUrl = facebookUrl;
     if (instagramUrl !== undefined) settings.instagramUrl = instagramUrl;
     if (youtubeUrl !== undefined) settings.youtubeUrl = youtubeUrl;
@@ -107,6 +112,14 @@ router.put('/', protectAdmin, upload.single('storeLogo'), async (req, res) => {
         settings.priceRanges = typeof priceRanges === 'string' ? JSON.parse(priceRanges) : priceRanges;
       } catch (err) {
         console.warn('Error parsing priceRanges:', err);
+      }
+    }
+
+    if (specialOffers) {
+      try {
+        settings.specialOffers = typeof specialOffers === 'string' ? JSON.parse(specialOffers) : specialOffers;
+      } catch (err) {
+        console.warn('Error parsing specialOffers:', err);
       }
     }
 

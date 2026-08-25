@@ -648,7 +648,9 @@
           <!-- Settings Tabs -->
           <div class="settings-tabs-nav">
             <button type="button" class="settings-tab-btn active" id="tab-btn-general" onclick="switchSettingsTab('general')">General Settings</button>
+            <button type="button" class="settings-tab-btn" id="tab-btn-offers" onclick="switchSettingsTab('offers')">Special Offers &amp; Combos</button>
             <button type="button" class="settings-tab-btn" id="tab-btn-filters" onclick="switchSettingsTab('filters')">Storefront Filters &amp; Categories</button>
+            <button type="button" class="settings-tab-btn" id="tab-btn-contact" onclick="switchSettingsTab('contact')">Contact Us Information</button>
             <button type="button" class="settings-tab-btn" id="tab-btn-social" onclick="switchSettingsTab('social')">Social Media &amp; WhatsApp</button>
           </div>
 
@@ -673,23 +675,13 @@
               </div>
 
               <div class="settings-card">
-                <h3 class="settings-sec-title">General Contact Parameters</h3>
-                <p class="settings-sec-subtitle">Edit public contact parameters shown on the customer storefront.</p>
+                <h3 class="settings-sec-title">General Brand Details</h3>
+                <p class="settings-sec-subtitle">Edit the brand title and tagline shown across headers and footers.</p>
 
                 <div class="form-grid">
                   <div class="form-group">
-                    <label class="form-label" for="setting-phone">Public Support Phone</label>
-                    <input type="text" id="setting-phone" class="form-control" placeholder="6381926567" />
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label" for="setting-email">Contact Email Address</label>
-                    <input type="email" id="setting-email" class="form-control" placeholder="contact@hisuvai.com" />
-                  </div>
-
-                  <div class="form-group full">
-                    <label class="form-label" for="setting-address">Store Physical Address</label>
-                    <textarea id="setting-address" class="form-control" rows="2" placeholder="15A, Madasamy Kovil Street, Pettai, Tirunelveli - 627004. Tamil Nadu, India."></textarea>
+                    <label class="form-label" for="setting-storename">Store / Brand Name</label>
+                    <input type="text" id="setting-storename" class="form-control" placeholder="Hi Suvai" />
                   </div>
 
                   <div class="form-group full">
@@ -700,7 +692,26 @@
               </div>
             </div>
 
-            <!-- TAB 2: STOREFRONT FILTERS & CATEGORIES -->
+            <!-- TAB 2: SPECIAL OFFERS & COMBOS -->
+            <div id="settings-pane-offers" class="settings-pane" style="display:none;">
+              <div class="settings-card">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+                  <div>
+                    <h3 class="settings-sec-title">Special Offers &amp; Combo Packs</h3>
+                    <p class="settings-sec-subtitle">Add, edit, or remove promotional combo cards shown in the Special Offers section.</p>
+                  </div>
+                  <button type="button" class="btn btn-purple" style="padding:7px 14px; font-size:0.82rem;" onclick="addSpecialOfferRow()">
+                    + Add New Offer
+                  </button>
+                </div>
+
+                <div id="admin-offers-list" style="display:flex; flex-direction:column; gap:14px;">
+                  <!-- Dynamically rendered offer cards -->
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB 3: STOREFRONT FILTERS & CATEGORIES -->
             <div id="settings-pane-filters" class="settings-pane" style="display:none;">
               <div class="settings-card">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
@@ -735,10 +746,50 @@
               </div>
             </div>
 
-            <!-- TAB 3: SOCIAL & WHATSAPP -->
+            <!-- TAB 4: CONTACT US INFORMATION -->
+            <div id="settings-pane-contact" class="settings-pane" style="display:none;">
+              <div class="settings-card">
+                <h3 class="settings-sec-title">Proprietor &amp; Store Contact Information</h3>
+                <p class="settings-sec-subtitle">Manage details displayed in the Contact Section and Website Footer.</p>
+
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label" for="setting-proprietor">Proprietor Name &amp; Qualifications</label>
+                    <input type="text" id="setting-proprietor" class="form-control" placeholder="M.RajaselviMahalingam. M.Sc., B.Ed." />
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="setting-phone">Customer Support Phone</label>
+                    <input type="text" id="setting-phone" class="form-control" placeholder="6381926567" />
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="setting-email">Official Email Address</label>
+                    <input type="email" id="setting-email" class="form-control" placeholder="hiisuvai@gmail.com" />
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="setting-whatsapp">WhatsApp Number (with 91 country code)</label>
+                    <input type="text" id="setting-whatsapp" class="form-control" placeholder="916381926567" />
+                  </div>
+
+                  <div class="form-group full">
+                    <label class="form-label" for="setting-address">Store Physical Address</label>
+                    <textarea id="setting-address" class="form-control" rows="3" placeholder="15A, Madasamy Kovil Street, Pettai, Tirunelveli – 627004. Tamil Nadu, India."></textarea>
+                  </div>
+
+                  <div class="form-group full">
+                    <label class="form-label" for="setting-map">Google Maps Embed URL / Link</label>
+                    <input type="text" id="setting-map" class="form-control" placeholder="https://www.google.com/maps/embed?pb=..." />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB 5: SOCIAL & WHATSAPP -->
             <div id="settings-pane-social" class="settings-pane" style="display:none;">
               <div class="settings-card">
-                <h3 class="settings-sec-title">Social Media Links &amp; WhatsApp</h3>
+                <h3 class="settings-sec-title">Social Media Links</h3>
                 <p class="settings-sec-subtitle">Easily update your YouTube, Facebook, and Instagram links shown in footer.</p>
 
                 <div class="form-grid">
@@ -755,11 +806,6 @@
                   <div class="form-group">
                     <label class="form-label" for="setting-youtube">YouTube Channel URL</label>
                     <input type="url" id="setting-youtube" class="form-control" placeholder="https://www.youtube.com/@hisuvai" />
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label" for="setting-whatsapp">WhatsApp Direct Number (with 91 country code)</label>
-                    <input type="text" id="setting-whatsapp" class="form-control" placeholder="916381926567" />
                   </div>
                 </div>
               </div>

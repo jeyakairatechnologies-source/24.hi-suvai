@@ -922,6 +922,33 @@ let adminPriceRanges = [
   { key: 'above200', label: 'Above ₹200', min: 201, max: 999999 }
 ];
 
+let adminSpecialOffers = [
+  {
+    title: 'ஹெல்த் மிக்ஸ் + கஞ்சி மிக்ஸ் காம்போ',
+    description: '1KG ஹெல்த் மிக்ஸ் (₹700) + 1KG கஞ்சி மிக்ஸ் (₹400) | மொத்த விலை ₹1100 ➔ சிறப்பு சலுகை விலை ₹1000',
+    price: 1000,
+    originalPrice: 1100,
+    image: 'offer_1.jpg',
+    buttonText: 'BUY OFFER - ₹1000'
+  },
+  {
+    title: 'இன்றைய சிறப்பு சலுகை Combo',
+    description: '24 வகை ஹெல்த் மிக்ஸ் + 16 வகை பாரம்பரிய அரிசி கஞ்சி மிக்ஸ் 1KG Combo Pack',
+    price: 1000,
+    originalPrice: 1100,
+    image: 'offer_2.jpg',
+    buttonText: 'BUY OFFER - ₹1000'
+  },
+  {
+    title: 'Weekend Offer - Free Gift!',
+    description: '1KG ஹெல்த் மிக்ஸ் (Rs. 700) வாங்கினால் 250g கருப்பு கோதுமை மாவு இலவசம்!',
+    price: 700,
+    originalPrice: 0,
+    image: 'offer_3.jpg',
+    buttonText: 'CLAIM OFFER - ₹700'
+  }
+];
+
 async function loadAdminSettings() {
   try {
     const res = await fetch(`${API_BASE}/settings`);
@@ -930,10 +957,13 @@ async function loadAdminSettings() {
       currentSettings = data.settings;
       const s = data.settings;
 
+      const storeName = document.getElementById('setting-storename'); if (storeName) storeName.value = s.storeName || 'Hi Suvai';
+      const proprietor = document.getElementById('setting-proprietor'); if (proprietor) proprietor.value = s.proprietorName || 'M.RajaselviMahalingam. M.Sc., B.Ed.';
       const phone = document.getElementById('setting-phone'); if (phone) phone.value = s.supportPhone || '';
       const email = document.getElementById('setting-email'); if (email) email.value = s.contactEmail || '';
       const addr = document.getElementById('setting-address'); if (addr) addr.value = s.storeAddress || '';
       const about = document.getElementById('setting-about'); if (about) about.value = s.aboutText || '';
+      const mapUrl = document.getElementById('setting-map'); if (mapUrl) mapUrl.value = s.googleMapUrl || '';
 
       const fb = document.getElementById('setting-facebook'); if (fb) fb.value = s.facebookUrl || '';
       const ig = document.getElementById('setting-instagram'); if (ig) ig.value = s.instagramUrl || '';
@@ -946,9 +976,13 @@ async function loadAdminSettings() {
       if (s.priceRanges && Array.isArray(s.priceRanges) && s.priceRanges.length > 0) {
         adminPriceRanges = s.priceRanges;
       }
+      if (s.specialOffers && Array.isArray(s.specialOffers) && s.specialOffers.length > 0) {
+        adminSpecialOffers = s.specialOffers;
+      }
 
       renderAdminCategoriesList();
       renderAdminPriceRangesList();
+      renderAdminOffersList();
       updateProductFormCategorySelect();
 
       const logoImg = document.getElementById('settings-logo-preview');
@@ -957,6 +991,73 @@ async function loadAdminSettings() {
   } catch (err) {
     console.warn('Settings load error:', err);
   }
+}
+
+function renderAdminOffersList() {
+  const container = document.getElementById('admin-offers-list');
+  if (!container) return;
+  container.innerHTML = '';
+
+  adminSpecialOffers.forEach((offer, index) => {
+    const card = document.createElement('div');
+    card.style.cssText = 'background:var(--bg-surface-2); padding:16px; border-radius:10px; border:1px solid var(--border-color); display:flex; flex-direction:column; gap:12px;';
+    card.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong style="color:var(--crimson); font-size:0.95rem;">Offer Card #${index+1}</strong>
+        <button type="button" class="btn btn-outline" style="padding:4px 8px; color:var(--danger); font-size:0.8rem;" onclick="removeSpecialOfferRow(${index})">
+          ✕ Remove Offer
+        </button>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div>
+          <label style="font-size:0.7rem; color:var(--text-dim); display:block; text-transform:uppercase;">Offer Title (Tamil / English)</label>
+          <input type="text" class="form-control" value="${offer.title || ''}" oninput="adminSpecialOffers[${index}].title = this.value" placeholder="e.g. ஹெல்த் மிக்ஸ் + கஞ்சி மிக்ஸ் காம்போ" />
+        </div>
+        <div>
+          <label style="font-size:0.7rem; color:var(--text-dim); display:block; text-transform:uppercase;">Image File / URL</label>
+          <input type="text" class="form-control" value="${offer.image || ''}" oninput="adminSpecialOffers[${index}].image = this.value" placeholder="e.g. offer_1.jpg" />
+        </div>
+        <div style="grid-column:1 / -1;">
+          <label style="font-size:0.7rem; color:var(--text-dim); display:block; text-transform:uppercase;">Description &amp; Pack Details</label>
+          <textarea class="form-control" rows="2" oninput="adminSpecialOffers[${index}].description = this.value" placeholder="1KG ஹெல்த் மிக்ஸ் + 1KG கஞ்சி மிக்ஸ்...">${offer.description || ''}</textarea>
+        </div>
+        <div>
+          <label style="font-size:0.7rem; color:var(--text-dim); display:block; text-transform:uppercase;">Offer Price (₹)</label>
+          <input type="number" class="form-control" value="${offer.price || 0}" oninput="adminSpecialOffers[${index}].price = Number(this.value)" placeholder="1000" />
+        </div>
+        <div>
+          <label style="font-size:0.7rem; color:var(--text-dim); display:block; text-transform:uppercase;">Original Total Price (₹)</label>
+          <input type="number" class="form-control" value="${offer.originalPrice || 0}" oninput="adminSpecialOffers[${index}].originalPrice = Number(this.value)" placeholder="1100" />
+        </div>
+        <div style="grid-column:1 / -1;">
+          <label style="font-size:0.7rem; color:var(--text-dim); display:block; text-transform:uppercase;">Action Button Text</label>
+          <input type="text" class="form-control" value="${offer.buttonText || 'BUY OFFER'}" oninput="adminSpecialOffers[${index}].buttonText = this.value" placeholder="BUY OFFER - ₹1000" />
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function addSpecialOfferRow() {
+  adminSpecialOffers.push({
+    title: 'New Combo Offer',
+    description: 'Special handcrafted traditional food combo discount deal.',
+    price: 999,
+    originalPrice: 1200,
+    image: 'offer_1.jpg',
+    buttonText: 'BUY OFFER - ₹999'
+  });
+  renderAdminOffersList();
+}
+
+function removeSpecialOfferRow(idx) {
+  if (adminSpecialOffers.length <= 1) {
+    showToast('At least one special offer is required', 'error');
+    return;
+  }
+  adminSpecialOffers.splice(idx, 1);
+  renderAdminOffersList();
 }
 
 function renderAdminCategoriesList() {
@@ -1119,10 +1220,13 @@ function previewLogoFile(input) {
 
 async function saveStoreSettings() {
   const formData = new FormData();
+  formData.append('storeName', document.getElementById('setting-storename')?.value.trim() || 'Hi Suvai');
+  formData.append('proprietorName', document.getElementById('setting-proprietor')?.value.trim() || 'M.RajaselviMahalingam. M.Sc., B.Ed.');
   formData.append('supportPhone', document.getElementById('setting-phone')?.value.trim() || '');
   formData.append('contactEmail', document.getElementById('setting-email')?.value.trim() || '');
   formData.append('storeAddress', document.getElementById('setting-address')?.value.trim() || '');
   formData.append('aboutText', document.getElementById('setting-about')?.value.trim() || '');
+  formData.append('googleMapUrl', document.getElementById('setting-map')?.value.trim() || '');
 
   formData.append('facebookUrl', document.getElementById('setting-facebook')?.value.trim() || '');
   formData.append('instagramUrl', document.getElementById('setting-instagram')?.value.trim() || '');
@@ -1131,6 +1235,7 @@ async function saveStoreSettings() {
 
   formData.append('customCategories', JSON.stringify(adminCategories));
   formData.append('priceRanges', JSON.stringify(adminPriceRanges));
+  formData.append('specialOffers', JSON.stringify(adminSpecialOffers));
 
   const logoFile = document.getElementById('settings-logo-file');
   if (logoFile && logoFile.files[0]) {
