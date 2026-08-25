@@ -44,10 +44,7 @@ const productSchema = new mongoose.Schema({
   category: {
     type: String,
     required: [true, 'Category is required'],
-    enum: {
-      values: ['health', 'porridge', 'flour', 'combo', 'spices', 'snacks', 'other'],
-      message: '{VALUE} is not a supported category'
-    },
+    trim: true,
     default: 'health'
   },
   stock: {

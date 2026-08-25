@@ -79,7 +79,9 @@ router.put('/', protectAdmin, upload.single('storeLogo'), async (req, res) => {
       facebookUrl,
       instagramUrl,
       youtubeUrl,
-      whatsappNumber
+      whatsappNumber,
+      customCategories,
+      priceRanges
     } = req.body;
 
     if (storeName) settings.storeName = storeName;
@@ -91,6 +93,22 @@ router.put('/', protectAdmin, upload.single('storeLogo'), async (req, res) => {
     if (instagramUrl !== undefined) settings.instagramUrl = instagramUrl;
     if (youtubeUrl !== undefined) settings.youtubeUrl = youtubeUrl;
     if (whatsappNumber !== undefined) settings.whatsappNumber = whatsappNumber;
+
+    if (customCategories) {
+      try {
+        settings.customCategories = typeof customCategories === 'string' ? JSON.parse(customCategories) : customCategories;
+      } catch (err) {
+        console.warn('Error parsing customCategories:', err);
+      }
+    }
+
+    if (priceRanges) {
+      try {
+        settings.priceRanges = typeof priceRanges === 'string' ? JSON.parse(priceRanges) : priceRanges;
+      } catch (err) {
+        console.warn('Error parsing priceRanges:', err);
+      }
+    }
 
     if (req.file) {
       settings.storeLogo = `/uploads/settings/${req.file.filename}`;

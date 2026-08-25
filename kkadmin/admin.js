@@ -218,7 +218,12 @@ function switchView(viewName) {
 
 function switchSettingsTab(tabName) {
   document.querySelectorAll('.settings-tab-btn').forEach(b => b.classList.remove('active'));
-  if (event && event.target) event.target.classList.add('active');
+  const btn = document.getElementById(`tab-btn-${tabName}`);
+  if (btn) btn.classList.add('active');
+
+  document.querySelectorAll('.settings-pane').forEach(p => p.style.display = 'none');
+  const pane = document.getElementById(`settings-pane-${tabName}`);
+  if (pane) pane.style.display = 'block';
 }
 
 // ============================================================
@@ -904,6 +909,19 @@ async function handleBannerUpload(e, slot) {
 // ============================================================
 // SETTINGS & SOCIAL LINKS MANAGEMENT
 // ============================================================
+let adminCategories = [
+  { key: 'health', label: 'Health Mix' },
+  { key: 'porridge', label: 'Porridge & Rice Mix' },
+  { key: 'flour', label: 'Special Flour' },
+  { key: 'combo', label: 'Combo Packs' }
+];
+
+let adminPriceRanges = [
+  { key: 'under150', label: 'Under ₹150', min: 0, max: 149 },
+  { key: '150-200', label: '₹150 – ₹200', min: 150, max: 200 },
+  { key: 'above200', label: 'Above ₹200', min: 201, max: 999999 }
+];
+
 async function loadAdminSettings() {
   try {
     const res = await fetch(`${API_BASE}/settings`);
@@ -922,11 +940,169 @@ async function loadAdminSettings() {
       const yt = document.getElementById('setting-youtube'); if (yt) yt.value = s.youtubeUrl || '';
       const wa = document.getElementById('setting-whatsapp'); if (wa) wa.value = s.whatsappNumber || '';
 
+      if (s.customCategories && Array.isArray(s.customCategories) && s.customCategories.length > 0) {
+        adminCategories = s.customCategories;
+      }
+      if (s.priceRanges && Array.isArray(s.priceRanges) && s.priceRanges.length > 0) {
+        adminPriceRanges = s.priceRanges;
+      }
+
+      renderAdminCategoriesList();
+      renderAdminPriceRangesList();
+      updateProductFormCategorySelect();
+
       const logoImg = document.getElementById('settings-logo-preview');
       if (logoImg && s.storeLogo) logoImg.src = resolveImageUrl(s.storeLogo);
     }
   } catch (err) {
     console.warn('Settings load error:', err);
+  }
+}
+
+function renderAdminCategoriesList() {
+  const container = document.getElementById('admin-categories-list');
+  if (!container) return;
+  container.innerHTML = '';
+
+  adminCategories.forEach((cat, index) => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex; gap:10px; align-items:center; background:var(--bg-surface-2); padding:10px 14px; border-radius:8px; border:1px solid var(--border-color);';
+    row.innerHTML = `
+      <span style="font-weight:700; color:var(--text-muted); width:24px;">#${index+1}</span>
+      <div style="flex:1;">
+        <label style="font-size:0.7rem; color:var(--text-dim); display:block; text-transform:uppercase;">Display Label</label>
+        <input type="text" class="form-control cat-label-input" value="${cat.label}" oninput="updateCatLabel(${index}, this.value)" placeholder="e.g. Health Mix" style="padding:6px 10px;" />
+      </div>
+      <div style="width:160px;">
+        <label style="font-size:0.7rem; color:var(--text-dim); display:block; text-transform:uppercase;">Category Key</label>
+        <input type="text" class="form-control cat-key-input" value="${cat.key}" oninput="updateCatKey(${index}, this.value)" placeholder="e.g. health" style="padding:6px 10px;" />
+      </div>
+      <button type="button" class="btn btn-outline" style="padding:6px 10px; color:var(--danger); margin-top:14px;" onclick="removeCategoryRow(${index})" title="Delete category">
+        ✕
+      </button>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function updateCatLabel(idx, val) {
+  if (adminCategories[idx]) {
+    adminCategories[idx].label = val;
+    updateProductFormCategorySelect();
+  }
+}
+
+function updateCatKey(idx, val) {
+  if (adminCategories[idx]) {
+    adminCategories[idx].key = val.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+    updateProductFormCategorySelect();
+  }
+}
+
+function addCategoryRow() {
+  const key = `cat_${Date.now().toString().slice(-4)}`;
+  adminCategories.push({ key, label: 'New Category' });
+  renderAdminCategoriesList();
+  updateProductFormCategorySelect();
+}
+
+function removeCategoryRow(idx) {
+  if (adminCategories.length <= 1) {
+    showToast('At least one category is required', 'error');
+    return;
+  }
+  adminCategories.splice(idx, 1);
+  renderAdminCategoriesList();
+  updateProductFormCategorySelect();
+}
+
+function renderAdminPriceRangesList() {
+  const container = document.getElementById('admin-price-ranges-list');
+  if (!container) return;
+  container.innerHTML = '';
+
+  adminPriceRanges.forEach((range, index) => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex; gap:10px; align-items:center; background:var(--bg-surface-2); padding:10px 14px; border-radius:8px; border:1px solid var(--border-color);';
+    row.innerHTML = `
+      <span style="font-weight:700; color:var(--text-muted); width:24px;">#${index+1}</span>
+      <div style="flex:1.5;">
+        <label style="font-size:0.7rem; color:var(--text-dim); display:block; text-transform:uppercase;">Filter Label</label>
+        <input type="text" class="form-control" value="${range.label}" oninput="adminPriceRanges[${index}].label = this.value" placeholder="e.g. Under ₹150" style="padding:6px 10px;" />
+      </div>
+      <div style="width:110px;">
+        <label style="font-size:0.7rem; color:var(--text-dim); display:block; text-transform:uppercase;">Min Price (₹)</label>
+        <input type="number" class="form-control" value="${range.min !== undefined ? range.min : 0}" oninput="adminPriceRanges[${index}].min = Number(this.value)" style="padding:6px 10px;" />
+      </div>
+      <div style="width:110px;">
+        <label style="font-size:0.7rem; color:var(--text-dim); display:block; text-transform:uppercase;">Max Price (₹)</label>
+        <input type="number" class="form-control" value="${range.max !== undefined ? range.max : 999999}" oninput="adminPriceRanges[${index}].max = Number(this.value)" style="padding:6px 10px;" />
+      </div>
+      <button type="button" class="btn btn-outline" style="padding:6px 10px; color:var(--danger); margin-top:14px;" onclick="removePriceRangeRow(${index})" title="Delete tier">
+        ✕
+      </button>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function addPriceRangeRow() {
+  const key = `price_${Date.now().toString().slice(-4)}`;
+  adminPriceRanges.push({ key, label: '₹200 – ₹300', min: 200, max: 300 });
+  renderAdminPriceRangesList();
+}
+
+function removePriceRangeRow(idx) {
+  if (adminPriceRanges.length <= 1) {
+    showToast('At least one price range is required', 'error');
+    return;
+  }
+  adminPriceRanges.splice(idx, 1);
+  renderAdminPriceRangesList();
+}
+
+function updateProductFormCategorySelect() {
+  const sel = document.getElementById('form-category');
+  if (!sel) return;
+  const currentVal = sel.value;
+  sel.innerHTML = '';
+  adminCategories.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.key;
+    opt.textContent = c.label;
+    sel.appendChild(opt);
+  });
+  const otherOpt = document.createElement('option');
+  otherOpt.value = 'other';
+  otherOpt.textContent = 'Other / General';
+  sel.appendChild(otherOpt);
+
+  if (currentVal) sel.value = currentVal;
+
+  const invFilter = document.getElementById('inv-filter-category');
+  if (invFilter) {
+    const prev = invFilter.value;
+    invFilter.innerHTML = '<option value="all">All Categories</option>';
+    adminCategories.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.key;
+      opt.textContent = c.label;
+      invFilter.appendChild(opt);
+    });
+    if (prev) invFilter.value = prev;
+  }
+
+  const prodFilter = document.getElementById('admin-filter-category');
+  if (prodFilter) {
+    const prev = prodFilter.value;
+    prodFilter.innerHTML = '<option value="all">All Categories</option>';
+    adminCategories.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.key;
+      opt.textContent = c.label;
+      prodFilter.appendChild(opt);
+    });
+    if (prev) prodFilter.value = prev;
   }
 }
 
@@ -953,6 +1129,9 @@ async function saveStoreSettings() {
   formData.append('youtubeUrl', document.getElementById('setting-youtube')?.value.trim() || '');
   formData.append('whatsappNumber', document.getElementById('setting-whatsapp')?.value.trim() || '');
 
+  formData.append('customCategories', JSON.stringify(adminCategories));
+  formData.append('priceRanges', JSON.stringify(adminPriceRanges));
+
   const logoFile = document.getElementById('settings-logo-file');
   if (logoFile && logoFile.files[0]) {
     formData.append('storeLogo', logoFile.files[0]);
@@ -971,7 +1150,7 @@ async function saveStoreSettings() {
       return;
     }
     if (data.success) {
-      showToast('✦ Configuration saved successfully! Public storefront updated.');
+      showToast('✦ Configuration & Filters saved successfully! Public storefront updated.');
       loadAdminSettings();
     } else {
       showToast(data.message || 'Failed to save configuration', 'error');

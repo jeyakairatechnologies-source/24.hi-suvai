@@ -46,6 +46,31 @@ const settingSchema = new mongoose.Schema({
   whatsappNumber: {
     type: String,
     default: '916381926567'
+  },
+  customCategories: {
+    type: [{
+      key: { type: String, required: true },
+      label: { type: String, required: true }
+    }],
+    default: [
+      { key: 'health', label: 'Health Mix' },
+      { key: 'porridge', label: 'Porridge & Rice Mix' },
+      { key: 'flour', label: 'Special Flour' },
+      { key: 'combo', label: 'Combo Packs' }
+    ]
+  },
+  priceRanges: {
+    type: [{
+      key: { type: String, required: true },
+      label: { type: String, required: true },
+      min: { type: Number, default: 0 },
+      max: { type: Number, default: 999999 }
+    }],
+    default: [
+      { key: 'under150', label: 'Under ₹150', min: 0, max: 149 },
+      { key: '150-200', label: '₹150 – ₹200', min: 150, max: 200 },
+      { key: 'above200', label: 'Above ₹200', min: 201, max: 999999 }
+    ]
   }
 }, {
   timestamps: true

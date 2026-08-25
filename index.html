@@ -2972,8 +2972,8 @@
   <div class="container">
     <div class="products-header">
       <div class="label" style="justify-content:center;">What We Offer</div>
-      <h2 class="section-title reveal" style="text-align:center;">A Treasury of<br/>Traditional <em style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--crimson)">Flavours</em></h2>
-      <p class="section-body reveal delay-2" style="margin:20px auto 0;text-align:center;">From handpounded rice to sun-dried jaggery — every product is a celebration of South India's rich culinary heritage.</p>
+      <h2 class="section-title reveal" style="text-align:center;">A Traditional  Food products<em style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--crimson)"></em></h2>
+      <p class="section-body reveal delay-2" style="margin:20px auto 0;text-align:center;">From handpounded rice to sun-dried jaggery — every product is .</p>
     </div>
 
     <!-- CATALOG WRAPPER WITH LEFT SIDEBAR FILTERS -->
@@ -4022,18 +4022,60 @@ function renderDynamicBentoGrid(productList) {
   filterCatalog();
 }
 
-function updateCategoryBadgeCounts(counts) {
-  if (!counts) return;
-  const updateBadge = (id, count) => {
-    const el = document.querySelector(`label[for="${id}"] .filter-count`);
-    if (el && count !== undefined) el.textContent = `(${count})`;
-  };
+function renderDynamicFilters() {
+  const catContainer = document.getElementById('dynamic-category-filters');
+  if (catContainer && activeCategories && activeCategories.length > 0) {
+    let catHtml = `
+      <div class="filter-option" onclick="setCategoryFilter('all')">
+        <input type="radio" name="cat-filter" id="cat-all" ${selectedCat === 'all' ? 'checked' : ''} />
+        <label for="cat-all">All Products <span class="filter-count" id="count-cat-all">(0)</span></label>
+      </div>
+    `;
+    activeCategories.forEach(c => {
+      catHtml += `
+        <div class="filter-option" onclick="setCategoryFilter('${c.key}')">
+          <input type="radio" name="cat-filter" id="cat-${c.key}" ${selectedCat === c.key ? 'checked' : ''} />
+          <label for="cat-${c.key}">${c.label} <span class="filter-count" id="count-cat-${c.key}">(0)</span></label>
+        </div>
+      `;
+    });
+    catContainer.innerHTML = catHtml;
+  }
 
-  updateBadge('cat-all', counts.all || Object.keys(PRODUCTS).length);
-  updateBadge('cat-health', counts.health || 0);
-  updateBadge('cat-porridge', counts.porridge || 0);
-  updateBadge('cat-flour', counts.flour || 0);
-  updateBadge('cat-combo', counts.combo || 0);
+  const priceContainer = document.getElementById('dynamic-price-filters');
+  if (priceContainer && activePriceRanges && activePriceRanges.length > 0) {
+    let priceHtml = `
+      <div class="filter-option" onclick="setPriceFilter('all')">
+        <input type="radio" name="price-filter" id="price-all" ${selectedPrice === 'all' ? 'checked' : ''} />
+        <label for="price-all">All Prices</label>
+      </div>
+    `;
+    activePriceRanges.forEach(r => {
+      priceHtml += `
+        <div class="filter-option" onclick="setPriceFilter('${r.key}')">
+          <input type="radio" name="price-filter" id="price-${r.key}" ${selectedPrice === r.key ? 'checked' : ''} />
+          <label for="price-${r.key}">${r.label}</label>
+        </div>
+      `;
+    });
+    priceContainer.innerHTML = priceHtml;
+  }
+
+  updateCategoryBadgeCounts();
+}
+
+function updateCategoryBadgeCounts(counts) {
+  const allCountEl = document.getElementById('count-cat-all');
+  const allItems = Object.values(PRODUCTS);
+  if (allCountEl) allCountEl.textContent = `(${allItems.length})`;
+
+  activeCategories.forEach(c => {
+    const el = document.getElementById(`count-cat-${c.key}`);
+    if (el) {
+      const matchCount = allItems.filter(p => p.category === c.key).length;
+      el.textContent = `(${matchCount})`;
+    }
+  });
 }
 
 // Product Detail Modal
@@ -4161,6 +4203,13 @@ async function fetchStoreSettings() {
         const waFloat = document.getElementById('wa-float-btn') || document.querySelector('.whatsapp-float');
         if (waFloat) waFloat.href = `https://wa.me/${s.whatsappNumber}`;
       }
+      if (s.customCategories && Array.isArray(s.customCategories) && s.customCategories.length > 0) {
+        activeCategories = s.customCategories;
+      }
+      if (s.priceRanges && Array.isArray(s.priceRanges) && s.priceRanges.length > 0) {
+        activePriceRanges = s.priceRanges;
+      }
+      renderDynamicFilters();
     }
   } catch (err) {
     console.warn('[Hi Suvai] Store settings API not reachable:', err.message);

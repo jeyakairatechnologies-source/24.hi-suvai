@@ -647,86 +647,128 @@
 
           <!-- Settings Tabs -->
           <div class="settings-tabs-nav">
-            <button class="settings-tab-btn active" onclick="switchSettingsTab('general')">General Settings</button>
-            <button class="settings-tab-btn" onclick="switchSettingsTab('social')">Social Media &amp; WhatsApp</button>
+            <button type="button" class="settings-tab-btn active" id="tab-btn-general" onclick="switchSettingsTab('general')">General Settings</button>
+            <button type="button" class="settings-tab-btn" id="tab-btn-filters" onclick="switchSettingsTab('filters')">Storefront Filters &amp; Categories</button>
+            <button type="button" class="settings-tab-btn" id="tab-btn-social" onclick="switchSettingsTab('social')">Social Media &amp; WhatsApp</button>
           </div>
 
-          <!-- General Settings Form -->
+          <!-- Settings Form -->
           <form id="settings-form" onsubmit="event.preventDefault(); saveStoreSettings();">
             
-            <div class="settings-card">
-              <h3 class="settings-sec-title">Store Brand &amp; Logo</h3>
-              <p class="settings-sec-subtitle">Upload your brand logo for the storefront navbar and receipts.</p>
+            <!-- TAB 1: GENERAL SETTINGS -->
+            <div id="settings-pane-general" class="settings-pane active">
+              <div class="settings-card">
+                <h3 class="settings-sec-title">Store Brand &amp; Logo</h3>
+                <p class="settings-sec-subtitle">Upload your brand logo for the storefront navbar and receipts.</p>
 
-              <div class="form-group" style="display:flex; align-items:center; gap:20px;">
-                <div style="width:80px; height:80px; background:var(--bg-surface-2); border:1px solid var(--border-color); border-radius:10px; padding:6px; display:flex; align-items:center; justify-content:center;">
-                  <img id="settings-logo-preview" src="assets/logo.png" alt="Logo" style="max-width:100%; max-height:100%; object-fit:contain;" />
+                <div class="form-group" style="display:flex; align-items:center; gap:20px;">
+                  <div style="width:80px; height:80px; background:var(--bg-surface-2); border:1px solid var(--border-color); border-radius:10px; padding:6px; display:flex; align-items:center; justify-content:center;">
+                    <img id="settings-logo-preview" src="assets/logo.png" alt="Logo" style="max-width:100%; max-height:100%; object-fit:contain;" />
+                  </div>
+                  <div>
+                    <input type="file" id="settings-logo-file" class="form-control" accept="image/*" onchange="previewLogoFile(this)" />
+                    <span style="font-size:0.75rem; color:var(--text-muted); display:block; margin-top:4px;">Recommended: PNG with transparent background</span>
+                  </div>
                 </div>
-                <div>
-                  <input type="file" id="settings-logo-file" class="form-control" accept="image/*" onchange="previewLogoFile(this)" />
-                  <span style="font-size:0.75rem; color:var(--text-muted); display:block; margin-top:4px;">Recommended: PNG with transparent background</span>
+              </div>
+
+              <div class="settings-card">
+                <h3 class="settings-sec-title">General Contact Parameters</h3>
+                <p class="settings-sec-subtitle">Edit public contact parameters shown on the customer storefront.</p>
+
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label" for="setting-phone">Public Support Phone</label>
+                    <input type="text" id="setting-phone" class="form-control" placeholder="6381926567" />
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="setting-email">Contact Email Address</label>
+                    <input type="email" id="setting-email" class="form-control" placeholder="contact@hisuvai.com" />
+                  </div>
+
+                  <div class="form-group full">
+                    <label class="form-label" for="setting-address">Store Physical Address</label>
+                    <textarea id="setting-address" class="form-control" rows="2" placeholder="15A, Madasamy Kovil Street, Pettai, Tirunelveli - 627004. Tamil Nadu, India."></textarea>
+                  </div>
+
+                  <div class="form-group full">
+                    <label class="form-label" for="setting-about">Store Tagline / About Text</label>
+                    <input type="text" id="setting-about" class="form-control" placeholder="Pure Traditional Taste & Ancient Roots — Handcrafted Foods from Tamil Nadu." />
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div class="settings-card">
-              <h3 class="settings-sec-title">General Contact Parameters</h3>
-              <p class="settings-sec-subtitle">Edit public contact parameters shown on the customer storefront.</p>
-
-              <div class="form-grid">
-                <div class="form-group">
-                  <label class="form-label" for="setting-phone">Public Support Phone</label>
-                  <input type="text" id="setting-phone" class="form-control" placeholder="6381926567" />
+            <!-- TAB 2: STOREFRONT FILTERS & CATEGORIES -->
+            <div id="settings-pane-filters" class="settings-pane" style="display:none;">
+              <div class="settings-card">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+                  <div>
+                    <h3 class="settings-sec-title">Storefront Product Categories</h3>
+                    <p class="settings-sec-subtitle">Add, rename, or delete categories shown in the customer sidebar filter.</p>
+                  </div>
+                  <button type="button" class="btn btn-purple" style="padding:7px 14px; font-size:0.82rem;" onclick="addCategoryRow()">
+                    + Add New Category
+                  </button>
                 </div>
 
-                <div class="form-group">
-                  <label class="form-label" for="setting-email">Contact Email Address</label>
-                  <input type="email" id="setting-email" class="form-control" placeholder="contact@hisuvai.com" />
+                <div id="admin-categories-list" style="display:flex; flex-direction:column; gap:10px;">
+                  <!-- Dynamically rendered category rows -->
+                </div>
+              </div>
+
+              <div class="settings-card">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+                  <div>
+                    <h3 class="settings-sec-title">Storefront Price Range Filters</h3>
+                    <p class="settings-sec-subtitle">Customize min &amp; max price tiers displayed in the customer filter sidebar.</p>
+                  </div>
+                  <button type="button" class="btn btn-purple" style="padding:7px 14px; font-size:0.82rem;" onclick="addPriceRangeRow()">
+                    + Add Price Tier
+                  </button>
                 </div>
 
-                <div class="form-group full">
-                  <label class="form-label" for="setting-address">Store Physical Address</label>
-                  <textarea id="setting-address" class="form-control" rows="2" placeholder="15A, Madasamy Kovil Street, Pettai, Tirunelveli - 627004. Tamil Nadu, India."></textarea>
-                </div>
-
-                <div class="form-group full">
-                  <label class="form-label" for="setting-about">Store Tagline / About Text</label>
-                  <input type="text" id="setting-about" class="form-control" placeholder="Pure Traditional Taste & Ancient Roots — Handcrafted Foods from Tamil Nadu." />
+                <div id="admin-price-ranges-list" style="display:flex; flex-direction:column; gap:10px;">
+                  <!-- Dynamically rendered price range rows -->
                 </div>
               </div>
             </div>
 
-            <div class="settings-card">
-              <h3 class="settings-sec-title">Social Media Links &amp; WhatsApp</h3>
-              <p class="settings-sec-subtitle">Easily update your YouTube, Facebook, and Instagram links shown in footer.</p>
+            <!-- TAB 3: SOCIAL & WHATSAPP -->
+            <div id="settings-pane-social" class="settings-pane" style="display:none;">
+              <div class="settings-card">
+                <h3 class="settings-sec-title">Social Media Links &amp; WhatsApp</h3>
+                <p class="settings-sec-subtitle">Easily update your YouTube, Facebook, and Instagram links shown in footer.</p>
 
-              <div class="form-grid">
-                <div class="form-group">
-                  <label class="form-label" for="setting-facebook">Facebook Page URL</label>
-                  <input type="url" id="setting-facebook" class="form-control" placeholder="https://www.facebook.com/hisuvai" />
-                </div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label" for="setting-facebook">Facebook Page URL</label>
+                    <input type="url" id="setting-facebook" class="form-control" placeholder="https://www.facebook.com/hisuvai" />
+                  </div>
 
-                <div class="form-group">
-                  <label class="form-label" for="setting-instagram">Instagram Profile URL</label>
-                  <input type="url" id="setting-instagram" class="form-control" placeholder="https://www.instagram.com/hisuvai" />
-                </div>
+                  <div class="form-group">
+                    <label class="form-label" for="setting-instagram">Instagram Profile URL</label>
+                    <input type="url" id="setting-instagram" class="form-control" placeholder="https://www.instagram.com/hisuvai" />
+                  </div>
 
-                <div class="form-group">
-                  <label class="form-label" for="setting-youtube">YouTube Channel URL</label>
-                  <input type="url" id="setting-youtube" class="form-control" placeholder="https://www.youtube.com/@hisuvai" />
-                </div>
+                  <div class="form-group">
+                    <label class="form-label" for="setting-youtube">YouTube Channel URL</label>
+                    <input type="url" id="setting-youtube" class="form-control" placeholder="https://www.youtube.com/@hisuvai" />
+                  </div>
 
-                <div class="form-group">
-                  <label class="form-label" for="setting-whatsapp">WhatsApp Direct Number (with 91 country code)</label>
-                  <input type="text" id="setting-whatsapp" class="form-control" placeholder="916381926567" />
+                  <div class="form-group">
+                    <label class="form-label" for="setting-whatsapp">WhatsApp Direct Number (with 91 country code)</label>
+                    <input type="text" id="setting-whatsapp" class="form-control" placeholder="916381926567" />
+                  </div>
                 </div>
               </div>
+            </div>
 
-              <div style="display:flex; justify-content:flex-end; margin-top:20px;">
-                <button type="button" class="btn btn-purple" onclick="saveStoreSettings()">
-                  Save Configuration
-                </button>
-              </div>
+            <div style="display:flex; justify-content:flex-end; margin-top:20px;">
+              <button type="button" class="btn btn-purple" onclick="saveStoreSettings()">
+                Save Configuration
+              </button>
             </div>
 
           </form>
