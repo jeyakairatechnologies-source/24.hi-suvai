@@ -3095,46 +3095,50 @@
         <!-- Category Filter -->
         <div class="filter-group">
           <h5>Categories</h5>
-          <div class="filter-option" onclick="setCategoryFilter('all')">
-            <input type="radio" name="cat-filter" id="cat-all" checked />
-            <label for="cat-all">All Products <span class="filter-count">(6)</span></label>
-          </div>
-          <div class="filter-option" onclick="setCategoryFilter('health')">
-            <input type="radio" name="cat-filter" id="cat-health" />
-            <label for="cat-health">Health Mix <span class="filter-count">(2)</span></label>
-          </div>
-          <div class="filter-option" onclick="setCategoryFilter('porridge')">
-            <input type="radio" name="cat-filter" id="cat-porridge" />
-            <label for="cat-porridge">Porridge &amp; Rice Mix <span class="filter-count">(2)</span></label>
-          </div>
-          <div class="filter-option" onclick="setCategoryFilter('flour')">
-            <input type="radio" name="cat-filter" id="cat-flour" />
-            <label for="cat-flour">Special Flour <span class="filter-count">(1)</span></label>
-          </div>
-          <div class="filter-option" onclick="setCategoryFilter('combo')">
-            <input type="radio" name="cat-filter" id="cat-combo" />
-            <label for="cat-combo">Combo Packs <span class="filter-count">(1)</span></label>
+          <div id="dynamic-category-filters">
+            <div class="filter-option" onclick="setCategoryFilter('all')">
+              <input type="radio" name="cat-filter" id="cat-all" checked />
+              <label for="cat-all">All Products <span class="filter-count" id="count-cat-all">(6)</span></label>
+            </div>
+            <div class="filter-option" onclick="setCategoryFilter('health')">
+              <input type="radio" name="cat-filter" id="cat-health" />
+              <label for="cat-health">Health Mix <span class="filter-count" id="count-cat-health">(2)</span></label>
+            </div>
+            <div class="filter-option" onclick="setCategoryFilter('porridge')">
+              <input type="radio" name="cat-filter" id="cat-porridge" />
+              <label for="cat-porridge">Porridge &amp; Rice Mix <span class="filter-count" id="count-cat-porridge">(2)</span></label>
+            </div>
+            <div class="filter-option" onclick="setCategoryFilter('flour')">
+              <input type="radio" name="cat-filter" id="cat-flour" />
+              <label for="cat-flour">Special Flour <span class="filter-count" id="count-cat-flour">(1)</span></label>
+            </div>
+            <div class="filter-option" onclick="setCategoryFilter('combo')">
+              <input type="radio" name="cat-filter" id="cat-combo" />
+              <label for="cat-combo">Combo Packs <span class="filter-count" id="count-cat-combo">(1)</span></label>
+            </div>
           </div>
         </div>
 
         <!-- Price Range Filter -->
         <div class="filter-group">
           <h5>Price Range</h5>
-          <div class="filter-option" onclick="setPriceFilter('all')">
-            <input type="radio" name="price-filter" id="price-all" checked />
-            <label for="price-all">All Prices</label>
-          </div>
-          <div class="filter-option" onclick="setPriceFilter('under150')">
-            <input type="radio" name="price-filter" id="price-under150" />
-            <label for="price-under150">Under ₹150</label>
-          </div>
-          <div class="filter-option" onclick="setPriceFilter('150-200')">
-            <input type="radio" name="price-filter" id="price-150-200" />
-            <label for="price-150-200">₹150 – ₹200</label>
-          </div>
-          <div class="filter-option" onclick="setPriceFilter('above200')">
-            <input type="radio" name="price-filter" id="price-above200" />
-            <label for="price-above200">Above ₹200</label>
+          <div id="dynamic-price-filters">
+            <div class="filter-option" onclick="setPriceFilter('all')">
+              <input type="radio" name="price-filter" id="price-all" checked />
+              <label for="price-all">All Prices</label>
+            </div>
+            <div class="filter-option" onclick="setPriceFilter('under150')">
+              <input type="radio" name="price-filter" id="price-under150" />
+              <label for="price-under150">Under ₹150</label>
+            </div>
+            <div class="filter-option" onclick="setPriceFilter('150-200')">
+              <input type="radio" name="price-filter" id="price-150-200" />
+              <label for="price-150-200">₹150 – ₹200</label>
+            </div>
+            <div class="filter-option" onclick="setPriceFilter('above200')">
+              <input type="radio" name="price-filter" id="price-above200" />
+              <label for="price-above200">Above ₹200</label>
+            </div>
           </div>
         </div>
 
@@ -3923,6 +3927,19 @@ window.addEventListener('resize', () => {
 let selectedCat = 'all', selectedPrice = 'all';
 let currentDetailProductId = null;
 
+let activeCategories = [
+  { key: 'health', label: 'Health Mix' },
+  { key: 'porridge', label: 'Porridge & Rice Mix' },
+  { key: 'flour', label: 'Special Flour' },
+  { key: 'combo', label: 'Combo Packs' }
+];
+
+let activePriceRanges = [
+  { key: 'under150', label: 'Under ₹150', min: 0, max: 149 },
+  { key: '150-200', label: '₹150 – ₹200', min: 150, max: 200 },
+  { key: 'above200', label: 'Above ₹200', min: 201, max: 999999 }
+];
+
 function setCategoryFilter(cat) {
   selectedCat = cat;
   const radio = document.getElementById('cat-' + cat);
@@ -3953,17 +3970,29 @@ function filterCatalog() {
 
   items.forEach(item => {
     const cat = item.getAttribute('data-category');
-    const price = parseInt(item.getAttribute('data-price'), 10);
+    const price = parseInt(item.getAttribute('data-price'), 10) || 0;
     const name = (item.querySelector('h4')?.textContent || '').toLowerCase();
     const desc = (item.querySelector('.bento-info p')?.textContent || '').toLowerCase();
     const tag  = (item.querySelector('.bento-tag')?.textContent || '').toLowerCase();
 
     let matchCat = (selectedCat === 'all' || cat === selectedCat);
     let matchPrice = false;
-    if (selectedPrice === 'all') matchPrice = true;
-    else if (selectedPrice === 'under150' && price < 150) matchPrice = true;
-    else if (selectedPrice === '150-200' && price >= 150 && price <= 200) matchPrice = true;
-    else if (selectedPrice === 'above200' && price > 200) matchPrice = true;
+
+    if (selectedPrice === 'all') {
+      matchPrice = true;
+    } else {
+      const activeRange = activePriceRanges.find(r => r.key === selectedPrice);
+      if (activeRange) {
+        const minVal = activeRange.min !== undefined ? activeRange.min : 0;
+        const maxVal = activeRange.max !== undefined ? activeRange.max : 999999;
+        matchPrice = (price >= minVal && price <= maxVal);
+      } else {
+        if (selectedPrice === 'under150' && price < 150) matchPrice = true;
+        else if (selectedPrice === '150-200' && price >= 150 && price <= 200) matchPrice = true;
+        else if (selectedPrice === 'above200' && price > 200) matchPrice = true;
+        else matchPrice = true;
+      }
+    }
 
     let matchSearch = !searchQuery || name.includes(searchQuery) || desc.includes(searchQuery) || tag.includes(searchQuery);
 
