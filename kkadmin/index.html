@@ -1017,61 +1017,8 @@
   
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Sales Overview Chart
-      const salesCtx = document.getElementById('salesChart');
-      if (salesCtx) {
-        new Chart(salesCtx, {
-          type: 'line',
-          data: {
-            labels: ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-            datasets: [{
-              label: 'Sales Revenue (Lakhs)',
-              data: [1.2, 1.5, 1.4, 2.1, 3.5, 4.2, 4.8, 5.5, 6.2, 6.9, 7.5, 8.2],
-              borderColor: '#DC2626',
-              backgroundColor: 'rgba(220, 38, 38, 0.1)',
-              borderWidth: 2,
-              tension: 0.4,
-              fill: true
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-              y: { beginAtZero: true, max: 10, ticks: { callback: function(value) { return '₹' + value; } } },
-              x: { grid: { display: false } }
-            }
-          }
-        });
-      }
-
-      // Sales by Category Chart
-      const categoryCtx = document.getElementById('categoryChart');
-      if (categoryCtx) {
-        new Chart(categoryCtx, {
-          type: 'doughnut',
-          data: {
-            labels: ['Health Mixes', 'Combo Deals', 'Porridges', 'Flours'],
-            datasets: [{
-              data: [45, 25, 20, 10],
-              backgroundColor: ['#7C3AED', '#C8973A', '#16A34A', '#EA580C'],
-              borderWidth: 0
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '75%',
-            plugins: {
-              legend: {
-                position: 'bottom',
-                labels: { usePointStyle: true, boxWidth: 8, font: { family: 'Inter', size: 11 }, maxWidth: 160 }
-              }
-            }
-          }
-        });
-      }
+      // Initialize Charts dynamically
+      initAdminCharts();
     });
   </script>
 </body>

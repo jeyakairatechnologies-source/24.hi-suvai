@@ -633,6 +633,133 @@ async function loadAdminOrders() {
 
   renderOrdersTable(allOrders);
   renderDashboardRecentOrders(allOrders.slice(0, 5));
+  updateDashboardCharts(allOrders);
+}
+
+// ============================================================
+// DYNAMIC LIVE CHARTS (SALES OVERVIEW & CATEGORY DISTRIBUTION)
+// ============================================================
+let salesChartInstance = null;
+let categoryChartInstance = null;
+
+function initAdminCharts() {
+  const salesCtx = document.getElementById('salesChart');
+  if (salesCtx) {
+    salesChartInstance = new Chart(salesCtx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        datasets: [{
+          label: 'Sales Revenue (₹)',
+          data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          borderColor: '#DC2626',
+          backgroundColor: 'rgba(220, 38, 38, 0.12)',
+          borderWidth: 2.5,
+          tension: 0.35,
+          fill: true,
+          pointBackgroundColor: '#DC2626',
+          pointRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, ticks: { callback: function(value) { return '₹' + value.toLocaleString('en-IN'); } } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  const categoryCtx = document.getElementById('categoryChart');
+  if (categoryCtx) {
+    categoryChartInstance = new Chart(categoryCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Health Mix', 'Porridge Mix', 'Special Flour', 'Combo Deals', 'Other'],
+        datasets: [{
+          data: [1, 1, 1, 1, 1],
+          backgroundColor: ['#7C3AED', '#C8973A', '#16A34A', '#EA580C', '#64748B'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '75%',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { usePointStyle: true, boxWidth: 8, font: { family: 'Inter', size: 11 }, maxWidth: 200 }
+          }
+        }
+      }
+    });
+  }
+}
+
+function updateDashboardCharts(orders) {
+  if (!orders) return;
+
+  // 1. Calculate Monthly Revenue Trend for Sales Overview
+  const monthlyTotals = new Array(12).fill(0);
+  const currentYear = new Date().getFullYear();
+
+  orders.forEach(o => {
+    if (o.orderStatus === 'Cancelled') return;
+    const orderDate = new Date(o.createdAt || Date.now());
+    const monthIdx = orderDate.getMonth();
+    const orderRev = Number(o.pricing?.grandTotal || o.total || 0);
+    monthlyTotals[monthIdx] += orderRev;
+  });
+
+  if (salesChartInstance) {
+    salesChartInstance.data.datasets[0].data = monthlyTotals;
+    salesChartInstance.update();
+  }
+
+  // 2. Calculate Category Sales / Product Quantities for Doughnut Chart
+  const categoryCounts = {
+    'Health Mix': 0,
+    'Porridge Mix': 0,
+    'Special Flour': 0,
+    'Combo Deals': 0,
+    'Other': 0
+  };
+
+  orders.forEach(o => {
+    if (o.orderStatus === 'Cancelled') return;
+    const items = o.items || [];
+    items.forEach(it => {
+      const qty = Number(it.quantity || it.qty || 1);
+      const name = (it.name || '').toLowerCase();
+      const cat = (it.category || '').toLowerCase();
+
+      if (cat.includes('health') || name.includes('health') || name.includes('ஹெல்த்')) {
+        categoryCounts['Health Mix'] += qty;
+      } else if (cat.includes('porridge') || cat.includes('rice') || name.includes('porridge') || name.includes('kanji') || name.includes('கஞ்சி')) {
+        categoryCounts['Porridge Mix'] += qty;
+      } else if (cat.includes('flour') || name.includes('flour') || name.includes('மாவு') || name.includes('gothumai')) {
+        categoryCounts['Special Flour'] += qty;
+      } else if (cat.includes('combo') || name.includes('combo') || name.includes('காம்போ')) {
+        categoryCounts['Combo Deals'] += qty;
+      } else {
+        categoryCounts['Other'] += qty;
+      }
+    });
+  });
+
+  const catLabels = Object.keys(categoryCounts);
+  const catData = Object.values(categoryCounts);
+  const hasOrders = catData.some(v => v > 0);
+
+  if (categoryChartInstance) {
+    categoryChartInstance.data.labels = catLabels;
+    categoryChartInstance.data.datasets[0].data = hasOrders ? catData : [4, 2, 2, 2, 1];
+    categoryChartInstance.update();
+  }
 }
 
 function renderOrdersTable(orders) {
