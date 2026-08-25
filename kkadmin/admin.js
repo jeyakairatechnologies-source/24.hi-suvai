@@ -55,12 +55,19 @@ function showAdminApp() {
 
 async function validateSessionAndBootstrap() {
   try {
-    const adminData = localStorage.getItem('hisuvai_admin_user');
-    if (adminData) {
-      currentAdmin = JSON.parse(adminData);
+    const res = await fetch(`${API_BASE}/auth/me`, {
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+    const data = await res.json();
+    if (res.ok && data.success && data.admin) {
+      currentAdmin = data.admin;
+      localStorage.setItem('hisuvai_admin_user', JSON.stringify(currentAdmin));
       updateAdminUserUI();
+      showAdminApp();
+    } else {
+      handleAdminLogout();
+      showToast('Your session has expired. Please log in again.', 'error');
     }
-    showAdminApp();
   } catch (e) {
     handleAdminLogout();
   }
@@ -956,6 +963,11 @@ async function saveStoreSettings() {
       body: formData
     });
     const data = await res.json();
+    if (res.status === 401) {
+      showToast('Session expired. Please log in again.', 'error');
+      setTimeout(() => handleAdminLogout(), 1500);
+      return;
+    }
     if (data.success) {
       showToast('✦ Configuration saved successfully! Public storefront updated.');
       loadAdminSettings();
